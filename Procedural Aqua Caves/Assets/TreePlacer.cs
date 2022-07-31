@@ -8,19 +8,39 @@ public class TreePlacer : MonoBehaviour
     public GameObject[] additionsPrefabs;
     GameObject spawnedObj;
 
+    [Range(1, 100)]
+    public int treesPerRow;
+    [Range(1, 100)]
+    public int treesPerColumn;
+    [Range(1, 200)]
+    public int extrasPerRow;
+    [Range(1, 200)]
+    public int extrasPerColumn;
+
     [ContextMenu("SpawnTree")]
     void SpawnTree()
     {
+        if (GameObject.FindGameObjectWithTag("Tree") != null)
+        {
+            var oldTrees = GameObject.FindGameObjectsWithTag("Tree");
+            int objsNumber = oldTrees.Length;
+
+            for (int i = 0; i < objsNumber; i++)
+            {
+                DestroyImmediate(oldTrees[i]);
+            }
+        }  
+
         var resetAllAxis = transform.position;
 
-        for (int j = 0; j <= 10; j++)
+        for (int j = 0; j <= treesPerColumn; j++)
         {
             var resetXAxis = transform.position.x;
 
-            for (int i = 0; i <= 10; i++)
+            for (int i = 0; i <= treesPerRow; i++)
             {
-                int layerMask = 1 << 8;
-                layerMask = ~layerMask;
+                //int layerMask = 1 << 8;
+                //layerMask = ~layerMask;
 
                 var resetZAxis = transform.position.z;
                 transform.position = transform.position + new Vector3(-Random.Range(10f, 2f), 0, Random.Range(10f, -10f));
@@ -31,15 +51,20 @@ public class TreePlacer : MonoBehaviour
 
                 var objToBeSpawned = treePrefabs[Random.Range(0, treePrefabs.Length)];
 
-                spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
-                var objRandomScale = Random.Range(0.5f, 1.5f);
-                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                
 
                 RaycastHit hit;
                 Vector3 down = transform.TransformDirection(Vector3.down);
-                if (Physics.Raycast(transform.position + new Vector3(0, 0, 1), down, out hit, 100, layerMask))
+                if (Physics.Raycast(transform.position + new Vector3(0, 0, 1), down, out hit, 500))
                 {
-                    spawnedObj.transform.position = hit.point;
+                    if (hit.transform.gameObject.layer != 8)
+                    {
+                        spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
+                        spawnedObj.transform.position = hit.point;
+                        var objRandomScale = Random.Range(0.5f, 1.5f);
+                        spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                        //spawnedObj.transform.SetParent(gameObject.transform, false);
+                    }     
                 }
 
                 transform.position = new Vector3(transform.position.x, transform.position.y, resetZAxis);
@@ -50,14 +75,14 @@ public class TreePlacer : MonoBehaviour
         
         transform.position = new Vector3(resetAllAxis.x, resetAllAxis.y, resetAllAxis.z);
 
-        for (int j = 0; j <= 10; j++)
+        for (int j = 0; j <= extrasPerColumn; j++)
         {
             var resetXAxis = transform.position.x;
 
-            for (int i = 0; i <= 25; i++)
+            for (int i = 0; i <= extrasPerRow; i++)
             {
-                int layerMask = 1 << 8;
-                layerMask = ~layerMask;
+                //int layerMask = 1 << 8;
+                //layerMask = ~layerMask;
 
                 var resetZAxis = transform.position.z;
                 transform.position = transform.position + new Vector3(-Random.Range(4f, 1f), 0, Random.Range(5f, -5f));
@@ -68,15 +93,18 @@ public class TreePlacer : MonoBehaviour
 
                 var objToBeSpawned = additionsPrefabs[Random.Range(0, additionsPrefabs.Length)];
 
-                spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
-                var objRandomScale = Random.Range(0.5f, 1.5f);
-                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
-
                 RaycastHit hit;
                 Vector3 down = transform.TransformDirection(Vector3.down);
-                if (Physics.Raycast(transform.position + new Vector3(0, 0, 1), down, out hit, 100, layerMask))
+                if (Physics.Raycast(transform.position + new Vector3(0, 0, 1), down, out hit, 500))
                 {
-                    spawnedObj.transform.position = hit.point;
+                    if (hit.transform.gameObject.layer != 8)
+                    {
+                        spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
+                        spawnedObj.transform.position = hit.point;
+                        var objRandomScale = Random.Range(0.5f, 1.5f);
+                        spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                       // spawnedObj.transform.SetParent(gameObject.transform, false);
+                    }
                 }
 
                 transform.position = new Vector3(transform.position.x, transform.position.y, resetZAxis);
