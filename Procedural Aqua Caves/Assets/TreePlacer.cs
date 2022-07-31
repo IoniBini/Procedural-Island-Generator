@@ -115,4 +115,14 @@ public class TreePlacer : MonoBehaviour
 
         transform.position = new Vector3(resetAllAxis.x, resetAllAxis.y, resetAllAxis.z);
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color32 (0, 255, 0, 100);
+        Gizmos.DrawCube(new Vector3(transform.position.x - treesPerRow * 6.5f/2, transform.position.y, transform.position.z + treesPerColumn * 10f / 2), new Vector3(treesPerRow * 6.5f, 100, treesPerColumn * 10f));
+
+        Gizmos.color = new Color32(255, 0, 0, 100);
+        Gizmos.DrawCube(new Vector3(transform.position.x - extrasPerRow * 2.5f / 2, transform.position.y, transform.position.z + extrasPerColumn * 10f / 2), new Vector3(extrasPerRow * 2.5f, 100, extrasPerColumn * 10f));
+    }
+
 }
