@@ -151,6 +151,12 @@ public class TreePlacer : MonoBehaviour
                                 spawnedObj.transform.position = hit.point;
                                 var objRandomScale = Random.Range(0.5f, 1.5f);
                                 spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                                var objRandomRotationX = Random.Range(-10f, 10f);
+                                var objRandomRotationY = Random.Range(0f, 360f);
+                                var objRandomRotationZ = Random.Range(-10f, 10f);
+                                spawnedObj.transform.localRotation = Quaternion.Euler(objRandomRotationX, objRandomRotationY, objRandomRotationZ);
+
+
                             }
                         }
                         else if (index == 1)
@@ -163,7 +169,12 @@ public class TreePlacer : MonoBehaviour
                                 spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
                                 spawnedObj.transform.position = hit.point;
                                 var objRandomScale = Random.Range(0.5f, 1.5f);
-                                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                                var objRandomScaleY = Random.Range(3f, 6f);
+                                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScaleY, objRandomScale);
+                                var objRandomRotationX = Random.Range(-10f, 10f);
+                                var objRandomRotationY = Random.Range(0f, 360f);
+                                var objRandomRotationZ = Random.Range(-10f, 10f);
+                                spawnedObj.transform.localRotation = Quaternion.Euler(objRandomRotationX, objRandomRotationY, objRandomRotationZ);
                             }
                         }
                         else if (index == 2 || index == 3 || index == 4)
@@ -177,6 +188,10 @@ public class TreePlacer : MonoBehaviour
                                 spawnedObj.transform.position = hit.point;
                                 var objRandomScale = Random.Range(0.5f, 1.5f);
                                 spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                                var objRandomRotationX = Random.Range(-10f, 10f);
+                                var objRandomRotationY = Random.Range(0f, 360f);
+                                var objRandomRotationZ = Random.Range(-10f, 10f);
+                                spawnedObj.transform.localRotation = Quaternion.Euler(objRandomRotationX, objRandomRotationY, objRandomRotationZ);
                             }
                         }
                         else if (index == 5 || index == 6)
@@ -190,6 +205,10 @@ public class TreePlacer : MonoBehaviour
                                 spawnedObj.transform.position = hit.point;
                                 var objRandomScale = Random.Range(0.5f, 1.5f);
                                 spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                                var objRandomRotationX = Random.Range(-10f, 10f);
+                                var objRandomRotationY = Random.Range(0f, 360f);
+                                var objRandomRotationZ = Random.Range(-10f, 10f);
+                                spawnedObj.transform.localRotation = Quaternion.Euler(objRandomRotationX, objRandomRotationY, objRandomRotationZ);
                             }
                         }
                     }     
@@ -204,7 +223,7 @@ public class TreePlacer : MonoBehaviour
         }
         
         //all the axis are reset so that the spawner can spawn the other extra things on the floor
-        transform.position = new Vector3(resetAllAxis.x, resetAllAxis.y, resetAllAxis.z);
+        /*transform.position = new Vector3(resetAllAxis.x, resetAllAxis.y, resetAllAxis.z);
         
         //follows the exact same thing as the code above
         for (int j = 0; j <= extrasPerColumn; j++)
@@ -243,7 +262,7 @@ public class TreePlacer : MonoBehaviour
             }
 
             transform.position = new Vector3(resetXAxis, transform.position.y, transform.position.z + 10);
-        }
+        }*/
 
         transform.position = new Vector3(resetAllAxis.x, resetAllAxis.y, resetAllAxis.z);
     }
