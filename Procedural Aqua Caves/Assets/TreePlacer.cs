@@ -19,6 +19,16 @@ public class TreePlacer : MonoBehaviour
     //in case you want to specify what map should be used, I have made the texture public so you can use a different one if need be
     public Texture2D imageMap;
 
+    //a variable that the lower it is, the less likley it is for a tree to spawn, and the higher, the more likely
+    [Range(1, 10)]
+    public int spawnChanceDesert;
+    [Range(1, 10)]
+    public int spawnChanceTundra;
+    [Range(1, 10)]
+    public int spawnChanceTropical;
+    [Range(1, 10)]
+    public int spawnChanceSea;
+
     //sliders for the amount of objs you wish to spawn in the x and z axis
     [Range(1, 100)]
     public int treesPerRow;
@@ -128,37 +138,59 @@ public class TreePlacer : MonoBehaviour
 
                         int index = FindIndexFromColor(color);
                         //Debug.Log("found color: " + index);
+
+                        //depending on what color is found, a different array of prefabs is chosen to be spawned from
                         if (index == 0)
                         {
-                            var objToBeSpawned = desertTrees[Random.Range(0, desertTrees.Length)];
-                            spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
-                            spawnedObj.transform.position = hit.point;
-                            var objRandomScale = Random.Range(0.5f, 1.5f);
-                            spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            var chanceToSpawn = Random.Range(spawnChanceDesert, 10);
+
+                            if (chanceToSpawn <= spawnChanceDesert)
+                            {
+                                var objToBeSpawned = desertTrees[Random.Range(0, desertTrees.Length)];
+                                spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
+                                spawnedObj.transform.position = hit.point;
+                                var objRandomScale = Random.Range(0.5f, 1.5f);
+                                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            }
                         }
                         else if (index == 1)
                         {
-                            var objToBeSpawned = seaTrees[Random.Range(0, seaTrees.Length)];
-                            spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
-                            spawnedObj.transform.position = hit.point;
-                            var objRandomScale = Random.Range(0.5f, 1.5f);
-                            spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            var chanceToSpawn = Random.Range(spawnChanceSea, 10);
+
+                            if (chanceToSpawn <= spawnChanceSea)
+                            {
+                                var objToBeSpawned = seaTrees[Random.Range(0, seaTrees.Length)];
+                                spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
+                                spawnedObj.transform.position = hit.point;
+                                var objRandomScale = Random.Range(0.5f, 1.5f);
+                                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            }
                         }
                         else if (index == 2 || index == 3 || index == 4)
                         {
-                            var objToBeSpawned = tundraTrees[Random.Range(0, tundraTrees.Length)];
-                            spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
-                            spawnedObj.transform.position = hit.point;
-                            var objRandomScale = Random.Range(0.5f, 1.5f);
-                            spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            var chanceToSpawn = Random.Range(spawnChanceTundra, 10);
+
+                            if (chanceToSpawn <= spawnChanceTundra)
+                            {
+                                var objToBeSpawned = tundraTrees[Random.Range(0, tundraTrees.Length)];
+                                spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
+                                spawnedObj.transform.position = hit.point;
+                                var objRandomScale = Random.Range(0.5f, 1.5f);
+                                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            }
                         }
                         else if (index == 5 || index == 6)
                         {
-                            var objToBeSpawned = tropicalTrees[Random.Range(0, tropicalTrees.Length)];
-                            spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
-                            spawnedObj.transform.position = hit.point;
-                            var objRandomScale = Random.Range(0.5f, 1.5f);
-                            spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            var chanceToSpawn = Random.Range(spawnChanceTropical, 10);
+
+                            if (chanceToSpawn <= spawnChanceTropical)
+                            {
+                                var objToBeSpawned = tropicalTrees[Random.Range(0, tropicalTrees.Length)];
+                                spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
+                                spawnedObj.transform.position = hit.point;
+                                var objRandomScale = Random.Range(0.5f, 1.5f);
+                                spawnedObj.transform.localScale = new Vector3(objRandomScale, objRandomScale, objRandomScale);
+                            }
                         }
                     }     
                 }
@@ -221,10 +253,10 @@ public class TreePlacer : MonoBehaviour
         //these gizmos use the average distances produced by spawning trees and their intervals versus the number of trees being spawned to visually demonstrate a square that delineates where the trees will appear
 
         Gizmos.color = new Color32 (0, 255, 0, 100);
-        Gizmos.DrawCube(new Vector3(transform.position.x - treesPerRow * 6.5f/2, transform.position.y - 1000/2, transform.position.z + treesPerColumn * 10f / 2), new Vector3(treesPerRow * 6.5f, raycastHeight * 2, treesPerColumn * 10f));
+        Gizmos.DrawCube(new Vector3(transform.position.x - treesPerRow * 6.5f/2, transform.position.y - (raycastHeight / 2), transform.position.z + treesPerColumn * 10f / 2), new Vector3(treesPerRow * 6.5f, raycastHeight, treesPerColumn * 10f));
 
         Gizmos.color = new Color32(255, 0, 0, 100);
-        Gizmos.DrawCube(new Vector3(transform.position.x - extrasPerRow * 2.5f / 2, transform.position.y, transform.position.z + extrasPerColumn * 10f / 2), new Vector3(extrasPerRow * 2.5f, raycastHeight, extrasPerColumn * 10f));
+        Gizmos.DrawCube(new Vector3(transform.position.x - extrasPerRow * 2.5f / 2, transform.position.y - (raycastHeight / 2), transform.position.z + extrasPerColumn * 10f / 2), new Vector3(extrasPerRow * 2.5f, raycastHeight, extrasPerColumn * 10f));
     }
 
 }
