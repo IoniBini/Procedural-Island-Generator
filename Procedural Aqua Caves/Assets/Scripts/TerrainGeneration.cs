@@ -66,41 +66,42 @@ public class TerrainGeneration : MonoBehaviour
                 newTerrain.name = "X" + j + "Y" + i;
                 newTerrain.gameObject.transform.parent = transform;
 
-                //use the names to determine who is going to be a neighbour to the current terrain (not currently working...)
-                Debug.Log((j - 1).ToString() + i.ToString());
-                if (GameObject.Find((j - 1).ToString() + i.ToString()) != null)
+                //use the names to determine who is going to be a neighbour to the current terrain
+                //it currently works, but the issue is that the meshes dont actually connect at the seams
+                Debug.Log("Left: " + "X" + (j - 1).ToString() + "Y" + i.ToString());
+                if (GameObject.Find("X" + (j - 1).ToString() + "Y" + i.ToString()) != null)
                 {
-                    left = GameObject.Find((j - 1).ToString() + i.ToString()).GetComponent<Terrain>(); 
+                    left = GameObject.Find("X" + (j - 1).ToString() + "Y" + i.ToString()).GetComponent<Terrain>(); 
                 }
                 else
                 {
                     left = null;
                 }
 
-
-                if (GameObject.Find(j.ToString() + (i + 1).ToString()) != null)
+                Debug.Log("Top: " + "X" + j.ToString() + "Y" + (i + 1).ToString());
+                if (GameObject.Find("X" + j.ToString() + "Y" + (i + 1).ToString()) != null)
                 {
-                    top = GameObject.Find((j - 1).ToString() + i.ToString()).GetComponent<Terrain>();
+                    top = GameObject.Find("X" + j.ToString() + "Y" + (i + 1).ToString()).GetComponent<Terrain>();
                 }
                 else
                 {
                     top = null;
                 }
 
-
-                if (GameObject.Find((j + 1).ToString() + i.ToString()) != null)
+                Debug.Log("Right: " + "X" + (j + 1).ToString() + "Y" + i.ToString());
+                if (GameObject.Find("X" + (j + 1).ToString() + "Y" + i.ToString()) != null)
                 {
-                    right = GameObject.Find((j - 1).ToString() + i.ToString()).GetComponent<Terrain>();
+                    right = GameObject.Find("X" + (j + 1).ToString() + "Y" + i.ToString()).GetComponent<Terrain>();
                 }
                 else
                 {
                     right = null;
                 }
 
-
-                if (GameObject.Find(j.ToString() + (i - 1).ToString()) != null)
+                Debug.Log("Bottom: " + "X" + j.ToString() + "Y" + (i - 1).ToString());
+                if (GameObject.Find("X" + j.ToString() + "Y" + (i - 1).ToString()) != null)
                 {
-                    bottom = GameObject.Find((j - 1).ToString() + i.ToString()).GetComponent<Terrain>();
+                    bottom = GameObject.Find("X" + j.ToString() + "Y" + (i - 1).ToString()).GetComponent<Terrain>();
                 }
                 else
                 {
