@@ -36,6 +36,8 @@ public class TerrainGeneration : MonoBehaviour
     [ContextMenu("GenerateTerrain")]
     private void ParentGenerateTerrain()
     {
+        
+
         //delete the previous stuff prior to commencing
         ClearTerrain();
 
@@ -44,10 +46,10 @@ public class TerrainGeneration : MonoBehaviour
         height = 32;
 
         //pick a new offset to make sure its random each time
-        offsetX = Random.Range(0f, 9999f);
-        offsetY = Random.Range(0f, 9999f);
+        offsetX = 0;//Random.Range(0f, 9999f);
+        offsetY = 0;//Random.Range(0f, 9999f);
 
-        for (int i = 0; i <= terrainResolution - 1; i++)
+        for (int i = 0; i < terrainResolution - 1; i++)
         {
             width *= 2;
             height *= 2;
@@ -57,18 +59,26 @@ public class TerrainGeneration : MonoBehaviour
         {
             //stores and reasigns the offsetX so that it doesnt keep on infinitely adding after beign done with one row and going up to the next one
             var tempOffsetX = offsetX;
+            //Debug.Log(tempOffsetX);
 
             //the minus 1 is due to the fact that the parent terrain occupies one of the slots
             for (int j = 0; j <= terrainCollumns - 1; j++)
             {
-                //gotta fix the placement, it doesnt take into account the resolution variable
+                TerrainData tData = new TerrainData();
+                var newTerrain = Terrain.CreateTerrainGameObject(tData);
+
+                //https://answers.unity.com/questions/292982/how-to-create-terraindata-at-runtime.html
+
+                //since this is now a game obj, then instead of instantiating, we can say newTerrain.wahtever paramater needs to be changed, and do it one by one
+                //newTerrain.transform
+
                 var newTerrain = Instantiate(prefab, new Vector3(transform.position.x + width * j, transform.position.y, transform.position.z + width * i), transform.rotation);//.GetComponent<ChildTerrainGeneration>();
                 newTerrain.name = "X" + j + "Y" + i;
                 newTerrain.gameObject.transform.parent = transform;
 
                 //use the names to determine who is going to be a neighbour to the current terrain
                 //it currently works, but the issue is that the meshes dont actually connect at the seams
-                Debug.Log("Left: " + "X" + (j - 1).ToString() + "Y" + i.ToString());
+                //Debug.Log("Left: " + "X" + (j - 1).ToString() + "Y" + i.ToString());
                 if (GameObject.Find("X" + (j - 1).ToString() + "Y" + i.ToString()) != null)
                 {
                     left = GameObject.Find("X" + (j - 1).ToString() + "Y" + i.ToString()).GetComponent<Terrain>(); 
@@ -78,7 +88,7 @@ public class TerrainGeneration : MonoBehaviour
                     left = null;
                 }
 
-                Debug.Log("Top: " + "X" + j.ToString() + "Y" + (i + 1).ToString());
+                //Debug.Log("Top: " + "X" + j.ToString() + "Y" + (i + 1).ToString());
                 if (GameObject.Find("X" + j.ToString() + "Y" + (i + 1).ToString()) != null)
                 {
                     top = GameObject.Find("X" + j.ToString() + "Y" + (i + 1).ToString()).GetComponent<Terrain>();
@@ -88,7 +98,7 @@ public class TerrainGeneration : MonoBehaviour
                     top = null;
                 }
 
-                Debug.Log("Right: " + "X" + (j + 1).ToString() + "Y" + i.ToString());
+                //Debug.Log("Right: " + "X" + (j + 1).ToString() + "Y" + i.ToString());
                 if (GameObject.Find("X" + (j + 1).ToString() + "Y" + i.ToString()) != null)
                 {
                     right = GameObject.Find("X" + (j + 1).ToString() + "Y" + i.ToString()).GetComponent<Terrain>();
@@ -98,7 +108,7 @@ public class TerrainGeneration : MonoBehaviour
                     right = null;
                 }
 
-                Debug.Log("Bottom: " + "X" + j.ToString() + "Y" + (i - 1).ToString());
+                //Debug.Log("Bottom: " + "X" + j.ToString() + "Y" + (i - 1).ToString());
                 if (GameObject.Find("X" + j.ToString() + "Y" + (i - 1).ToString()) != null)
                 {
                     bottom = GameObject.Find("X" + j.ToString() + "Y" + (i - 1).ToString()).GetComponent<Terrain>();
@@ -112,7 +122,9 @@ public class TerrainGeneration : MonoBehaviour
 
                 newTerrain.GetComponent<ChildTerrainGeneration>().ChildGenerateTerrain();
 
+                Debug.Log(offsetX);
                 offsetX += height;
+                Debug.Log(offsetX);
             }
 
             offsetY += width;
