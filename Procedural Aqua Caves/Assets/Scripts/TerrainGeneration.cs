@@ -23,15 +23,13 @@ public class TerrainGeneration : MonoBehaviour
 
     public float scale = 20f;
 
-    public float offsetX = 100f;// equivalent to the width
-    public float offsetY = 100f;// equivalent to the height
+    [HideInInspector]public float offsetX = 100f;// equivalent to the width
+    [HideInInspector]public float offsetY = 100f;// equivalent to the height
 
-    public GameObject prefab;
-
-    public Terrain left;
-    public Terrain top;
-    public Terrain right;
-    public Terrain bottom;
+    [HideInInspector] public Terrain left;
+    [HideInInspector] public Terrain top;
+    [HideInInspector] public Terrain right;
+    [HideInInspector] public Terrain bottom;
 
     [ContextMenu("GenerateTerrain")]
     private void ParentGenerateTerrain()
@@ -46,8 +44,11 @@ public class TerrainGeneration : MonoBehaviour
         height = 32;
 
         //pick a new offset to make sure its random each time
-        offsetX = 0;//Random.Range(0f, 9999f);
-        offsetY = 0;//Random.Range(0f, 9999f);
+        offsetX = Random.Range(0f, 9999f);
+        offsetY = Random.Range(0f, 9999f);
+        var offsetXReset = offsetX;
+        var offsetYReset = offsetY;
+
 
         for (int i = 0; i < terrainResolution - 1; i++)
         {
@@ -55,33 +56,30 @@ public class TerrainGeneration : MonoBehaviour
             height *= 2;
         }
 
-        for (int i = 0; i <= terrainRows - 1; i++)
+        for (int y = 0; y <= terrainRows - 1; y++)
         {
             //stores and reasigns the offsetX so that it doesnt keep on infinitely adding after beign done with one row and going up to the next one
             var tempOffsetX = offsetX;
             //Debug.Log(tempOffsetX);
 
             //the minus 1 is due to the fact that the parent terrain occupies one of the slots
-            for (int j = 0; j <= terrainCollumns - 1; j++)
+            for (int x = 0; x <= terrainCollumns - 1; x++)
             {
-                TerrainData tData = new TerrainData();
-                var newTerrain = Terrain.CreateTerrainGameObject(tData);
-
                 //https://answers.unity.com/questions/292982/how-to-create-terraindata-at-runtime.html
 
-                //since this is now a game obj, then instead of instantiating, we can say newTerrain.wahtever paramater needs to be changed, and do it one by one
-                //newTerrain.transform
-
-                var newTerrain = Instantiate(prefab, new Vector3(transform.position.x + width * j, transform.position.y, transform.position.z + width * i), transform.rotation);//.GetComponent<ChildTerrainGeneration>();
-                newTerrain.name = "X" + j + "Y" + i;
+                TerrainData tData = new TerrainData();
+                var newTerrain = Terrain.CreateTerrainGameObject(tData);
+                newTerrain.transform.position = new Vector3(transform.position.x + width * x, transform.position.y, transform.position.z + width * y);
+                newTerrain.AddComponent<ChildTerrainGeneration>();
+                newTerrain.name = "X" + x + "Y" + y;
                 newTerrain.gameObject.transform.parent = transform;
 
                 //use the names to determine who is going to be a neighbour to the current terrain
                 //it currently works, but the issue is that the meshes dont actually connect at the seams
                 //Debug.Log("Left: " + "X" + (j - 1).ToString() + "Y" + i.ToString());
-                if (GameObject.Find("X" + (j - 1).ToString() + "Y" + i.ToString()) != null)
+                if (GameObject.Find("X" + (x - 1).ToString() + "Y" + y.ToString()) != null)
                 {
-                    left = GameObject.Find("X" + (j - 1).ToString() + "Y" + i.ToString()).GetComponent<Terrain>(); 
+                    left = GameObject.Find("X" + (x - 1).ToString() + "Y" + y.ToString()).GetComponent<Terrain>(); 
                 }
                 else
                 {
@@ -89,9 +87,9 @@ public class TerrainGeneration : MonoBehaviour
                 }
 
                 //Debug.Log("Top: " + "X" + j.ToString() + "Y" + (i + 1).ToString());
-                if (GameObject.Find("X" + j.ToString() + "Y" + (i + 1).ToString()) != null)
+                if (GameObject.Find("X" + x.ToString() + "Y" + (y + 1).ToString()) != null)
                 {
-                    top = GameObject.Find("X" + j.ToString() + "Y" + (i + 1).ToString()).GetComponent<Terrain>();
+                    top = GameObject.Find("X" + x.ToString() + "Y" + (y + 1).ToString()).GetComponent<Terrain>();
                 }
                 else
                 {
@@ -99,9 +97,9 @@ public class TerrainGeneration : MonoBehaviour
                 }
 
                 //Debug.Log("Right: " + "X" + (j + 1).ToString() + "Y" + i.ToString());
-                if (GameObject.Find("X" + (j + 1).ToString() + "Y" + i.ToString()) != null)
+                if (GameObject.Find("X" + (x + 1).ToString() + "Y" + y.ToString()) != null)
                 {
-                    right = GameObject.Find("X" + (j + 1).ToString() + "Y" + i.ToString()).GetComponent<Terrain>();
+                    right = GameObject.Find("X" + (x + 1).ToString() + "Y" + y.ToString()).GetComponent<Terrain>();
                 }
                 else
                 {
@@ -109,27 +107,38 @@ public class TerrainGeneration : MonoBehaviour
                 }
 
                 //Debug.Log("Bottom: " + "X" + j.ToString() + "Y" + (i - 1).ToString());
-                if (GameObject.Find("X" + j.ToString() + "Y" + (i - 1).ToString()) != null)
+                if (GameObject.Find("X" + x.ToString() + "Y" + (y - 1).ToString()) != null)
                 {
-                    bottom = GameObject.Find("X" + j.ToString() + "Y" + (i - 1).ToString()).GetComponent<Terrain>();
+                    bottom = GameObject.Find("X" + x.ToString() + "Y" + (y - 1).ToString()).GetComponent<Terrain>();
                 }
                 else
                 {
                     bottom = null;
                 }
 
-                newTerrain.GetComponent<Terrain>().SetNeighbors(left, top, right, bottom);
 
-                newTerrain.GetComponent<ChildTerrainGeneration>().ChildGenerateTerrain();
-
-                Debug.Log(offsetX);
+                //Debug.Log(offsetX);
                 offsetX += height;
-                Debug.Log(offsetX);
+                //Debug.Log(offsetX);
             }
 
             offsetY += width;
 
             offsetX = tempOffsetX;
+        }
+
+        offsetX = offsetXReset;
+        offsetY = offsetYReset;
+
+        if (transform.childCount != 0)
+        {
+            //We iterate backwards through children, since if we go forwards we end up changing child indices
+            for (var i = transform.childCount - 1; i >= 0; i--)
+            {
+                transform.GetChild(i).GetComponent<ChildTerrainGeneration>().ChildGenerateTerrain();
+                transform.GetChild(i).GetComponent<Terrain>().SetNeighbors(left, top, right, bottom);
+                transform.GetChild(i).GetComponent<Terrain>().Flush();
+            }
         }
     }
 

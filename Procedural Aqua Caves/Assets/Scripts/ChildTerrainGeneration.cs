@@ -6,18 +6,18 @@ public class ChildTerrainGeneration : MonoBehaviour
 {
     private int terrainResolutionChild = 1;
 
-    private int widthChild; //x-axis of the terrain
-    private int heightChild; //z-axis
-
-    private int depthChild; //y-axis
-
+    private int widthChild;
+    private int heightChild;
+    private int depthChild;
     private float scaleChild;
 
+    [Header("Display Only Offset Variables")]
     [SerializeField] private float offsetXChild;
     [SerializeField] private float offsetYChild;
 
     public TerrainGeneration parentData;
 
+    [ContextMenu("Manual Generate Override")]
     public void ChildGenerateTerrain()
     {
         //the first step is to collect all the data present in the parent and store it in each individual child obj
@@ -31,8 +31,6 @@ public class ChildTerrainGeneration : MonoBehaviour
         offsetXChild = parentData.offsetX;
         offsetYChild = parentData.offsetY;
                        
-        //terrain.SetNeighbors(null , null, null, null);
-
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
     }
@@ -63,11 +61,10 @@ public class ChildTerrainGeneration : MonoBehaviour
 
     float CalculateHeight(int x, int y)
     {
-        //the first one becomes 1 1 bc x and y start at exactly 32, hence the corners are workign bc they are perfect multiples of 32, but the midpoints are not
-        float xCoord = ((float)x + offsetXChild) / widthChild * scaleChild;
-        float yCoord = ((float)y + offsetYChild) / heightChild * scaleChild;
+        float xCoord = (x + offsetXChild) / widthChild * scaleChild;
+        float yCoord = (y + offsetYChild) / heightChild * scaleChild;
 
-        if (x == 0 && y == 0)
+        /*if (x == 0 && y == 0)
         {
             Debug.Log("BottomLeft: X = " + xCoord + " Y = " + yCoord);
         }
@@ -76,6 +73,10 @@ public class ChildTerrainGeneration : MonoBehaviour
         {
             Debug.Log("TopRight: X = " + xCoord + " Y = " + yCoord);
         }
+        if (y == 0)
+        {
+            Debug.Log("BottomXValues: X = " + xCoord + " Y = " + yCoord);
+        }*/
 
         return Mathf.PerlinNoise(xCoord, yCoord);
     }
