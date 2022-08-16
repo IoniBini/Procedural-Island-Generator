@@ -19,34 +19,33 @@ public class TerrainGeneration1 : MonoBehaviour
     [HideInInspector] public int width = 32; //x-axis of the terrain
     [HideInInspector] public int height = 32; //z-axis
 
-    private int depth = 20; //y-axis
+    private int maxDepth = 30; //y-axis
     private float scale = 20f;
+    private float depthModifier;
 
-    public int depthModifier;
+    //[SerializeField]
+    //public static float[,] falloffArray;
 
     private float offsetX = 0f;// equivalent to the width
     private float offsetY = 0f;// equivalent to the height
 
-    private float storeOffsetX;
-    private float storeOffsetY;
-
-    public int biomeType;
+    private int biomeType;
     //1 = forest
     //2 = sea
     //3 = mountain
     //4 = dessert
 
     [Header("Dessert Biome Variables")]
-    public int desertDepth = 1;
+    [Range(0f, 2f)]public float desertDepth = 1f;
     public float desertScale = 1f;
     [Header("Forest Biome Variables")]
-    public int forestDepth = 1;
+    [Range(0f, 2f)] public float forestDepth = 1f;
     public float forestScale = 1f;
     [Header("Mountain Biome Variables")]
-    public int mountainDepth = 1;
+    [Range(0f, 2f)] public float mountainDepth = 1f;
     public float mountainScale = 1f;
     [Header("Sea Biome Variables")]
-    public int seaDepth = 1;
+    [Range(0f, 2f)] public float seaDepth = 1f;
     public float seaScale = 1f;
 
 
@@ -64,9 +63,6 @@ public class TerrainGeneration1 : MonoBehaviour
         offsetX = Random.Range(0f, 9999f);
         offsetY = Random.Range(0f, 9999f);
 
-        storeOffsetX = 0f;
-        storeOffsetY = 0f;
-
         //adjusts the size to the appropriate resolution
         for (int i = 0; i < terrainResolution - 1; i++)
         {
@@ -74,6 +70,7 @@ public class TerrainGeneration1 : MonoBehaviour
             height *= 2;
         }
 
+        //GenerateFalloffMap(width / terrainCollumns);
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
     }
@@ -81,7 +78,7 @@ public class TerrainGeneration1 : MonoBehaviour
     TerrainData GenerateTerrain(TerrainData terrainData)
     {
         terrainData.heightmapResolution = width;
-        terrainData.size = new Vector3(width, depth, height);
+        terrainData.size = new Vector3(width, maxDepth, height);
 
         for (int y = 0; y < terrainRows; y++)
         {
@@ -91,20 +88,14 @@ public class TerrainGeneration1 : MonoBehaviour
 
                 StartCoroutine(ApplyBiomeModifiers());
 
+                offsetX = Random.Range(0f, 9999f);
+                offsetY = Random.Range(0f, 9999f);
+
                 //the first two floats show where the heights begin being calculated on the terrain plane, the generate heights determines the noise
                 //itself as well as how much area is being calculated starting from the previously established points
-                terrainData.size = new Vector3(width, depth, height);
                 terrainData.SetHeights(width / terrainCollumns * x, height / terrainRows * y, GenerateHeights());
-
-                //storeOffsetX += (width + 1) / terrainCollumns;
-                //Debug.Log("offsetX = " + storeOffsetX);
             }
-
-            //storeOffsetY =+ height / terrainRows;
-            //Debug.Log("offsetY = " + storeOffsetY);
         }
-
-
         return terrainData;
     }
 
@@ -119,19 +110,19 @@ public class TerrainGeneration1 : MonoBehaviour
             //4 = dessert
 
             case 1:
-                depth = forestDepth;
+                depthModifier = forestDepth;
                 scale = forestScale;
                 break;
             case 2:
-                depth = seaDepth;
+                depthModifier = seaDepth;
                 scale = seaScale;
                 break;
             case 3:
-                depth = mountainDepth;
+                depthModifier = mountainDepth;
                 scale = mountainScale;
                 break;
             case 4:
-                depth = desertDepth;
+                depthModifier = desertDepth;
                 scale = desertScale;
                 break;
         }
@@ -141,13 +132,37 @@ public class TerrainGeneration1 : MonoBehaviour
 
     float[,] GenerateHeights()
     {
-        //heights represents how much area is being calcuated
+        //https://www.youtube.com/watch?v=COmtTyLCd6I
+        var size = (width) / terrainCollumns;
+        float[,] map = new float[size, size];
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                float x = i / (float)size * 2 - 1;
+                float y = j / (float)size * 2 - 1;
+
+                float value = Mathf.Max(Mathf.Abs(x), Mathf.Abs(y));
+                map[i, j] = Evaluate(value);
+            }
+        }
+
+        static float Evaluate(float value)
+        {
+            float a = 3;
+            float b = 2.2f;
+
+            return Mathf.Pow(value, a) / (Mathf.Pow(value, a) + Mathf.Pow(b - b * value, a));
+        }
+
+        //the heights array represents how much area is being calcuated
         float[,] heights = new float[(width) / terrainCollumns, (height) / terrainRows];
         for (int x = 0; x < (width) / terrainCollumns; x++)
         {
             for (int y = 0; y < (height) / terrainRows; y++)
             {
-                heights[x, y] = CalculateHeight(x, y);
+                heights[x, y] = (Mathf.Clamp01(CalculateHeight(x, y) * depthModifier) - map[x, y]);
             }
         }
 
@@ -156,26 +171,8 @@ public class TerrainGeneration1 : MonoBehaviour
 
     float CalculateHeight(int x, int y)
     {
-        //and to ensure that the transition is smooth, we can add onto the offset values, but its not correct atm
-
         float xCoord = ((x + offsetX) / width * scale);
         float yCoord = ((y + offsetY) / height * scale);
-
-        //Debug.Log(" offsetY = " + yCoord);
-
-        /*if (x == 0 && y == 0)
-        {
-            Debug.Log("BottomLeft: X = " + xCoord + " Y = " + yCoord);
-        }
-
-        if (x == widthChild && y == heightChild)
-        {
-            Debug.Log("TopRight: X = " + xCoord + " Y = " + yCoord);
-        }
-        if (y == 0)
-        {
-            Debug.Log("BottomXValues: X = " + xCoord + " Y = " + yCoord);
-        }*/
 
         return Mathf.PerlinNoise(xCoord, yCoord);
     }
@@ -183,12 +180,12 @@ public class TerrainGeneration1 : MonoBehaviour
     [ContextMenu("ClearTerrain")]
     private void ClearTerrain()
     {
-        var tempDepth = depth;
-        depth = 0;
+        var tempDepth = maxDepth;
+        maxDepth = 0;
 
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
 
-        depth = tempDepth;
+        maxDepth = tempDepth;
     }
 }
