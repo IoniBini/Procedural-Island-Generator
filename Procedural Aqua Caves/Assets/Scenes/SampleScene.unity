@@ -417,11 +417,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrainResolution: 2
   terrainRows: 2
-  terrainCollumns: 1
+  terrainCollumns: 2
   width: 64
   height: 64
-  depth: 10
-  scale: 10
+  scale: 8
+  depthModifier: 10
+  biomeType: 2
+  desertDepth: 5
+  desertScale: 2
+  forestDepth: 10
+  forestScale: 4
+  mountainDepth: 15
+  mountainScale: 6
+  seaDepth: 20
+  seaScale: 8
 --- !u!154 &535490405
 TerrainCollider:
   m_ObjectHideFlags: 0
@@ -480,7 +489,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
@@ -785,133 +794,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &2656005197033069554
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: left
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: depth
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: scale
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: width
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: bottom
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: height
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: prefab
-      value: 
-      objectReference: {fileID: 8120675092581051311, guid: 95ee447d153b32b41a45e5e8e0b4944c,
-        type: 3}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: offsetX
-      value: 1042.8613
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: offsetY
-      value: 8750.099
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: terrainRows
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: terrainCollumns
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 367912790912227832, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: terrainResolution
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 604642117807177326, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_Name
-      value: TerrainGenerator
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1094.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6383123414741284772, guid: b6a8ee90b34f7914ebb36f0b0886a5bb,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b6a8ee90b34f7914ebb36f0b0886a5bb, type: 3}

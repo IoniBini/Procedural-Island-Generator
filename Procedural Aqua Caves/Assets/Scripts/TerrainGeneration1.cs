@@ -19,15 +19,36 @@ public class TerrainGeneration1 : MonoBehaviour
     [HideInInspector] public int width = 32; //x-axis of the terrain
     [HideInInspector] public int height = 32; //z-axis
 
-    public int depth = 20; //y-axis
+    private int depth = 20; //y-axis
+    private float scale = 20f;
 
-    public float scale = 20f;
+    public int depthModifier;
 
     private float offsetX = 0f;// equivalent to the width
     private float offsetY = 0f;// equivalent to the height
 
     private float storeOffsetX;
     private float storeOffsetY;
+
+    public int biomeType;
+    //1 = forest
+    //2 = sea
+    //3 = mountain
+    //4 = dessert
+
+    [Header("Dessert Biome Variables")]
+    public int desertDepth = 1;
+    public float desertScale = 1f;
+    [Header("Forest Biome Variables")]
+    public int forestDepth = 1;
+    public float forestScale = 1f;
+    [Header("Mountain Biome Variables")]
+    public int mountainDepth = 1;
+    public float mountainScale = 1f;
+    [Header("Sea Biome Variables")]
+    public int seaDepth = 1;
+    public float seaScale = 1f;
+
 
     [ContextMenu("GenerateTerrain")]
     private void TerrainPrep()
@@ -53,62 +74,92 @@ public class TerrainGeneration1 : MonoBehaviour
             height *= 2;
         }
 
-        //newTerrain.transform.position = new Vector3(transform.position.x + width * x, transform.position.y, transform.position.z + width * y);
-        //Debug.Log(offsetX);
-        //offsetX += height;
-
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
     }
 
     TerrainData GenerateTerrain(TerrainData terrainData)
     {
-        terrainData.heightmapResolution = width + 1;
+        terrainData.heightmapResolution = width;
         terrainData.size = new Vector3(width, depth, height);
 
-        //for (int y = 0; y < terrainRows; y++)
+        for (int y = 0; y < terrainRows; y++)
         {
             for (int x = 0; x < terrainCollumns; x++)
             {
+                biomeType = Random.Range(1, 4);
+
+                StartCoroutine(ApplyBiomeModifiers());
+
                 //the first two floats show where the heights begin being calculated on the terrain plane, the generate heights determines the noise
                 //itself as well as how much area is being calculated starting from the previously established points
-                terrainData.SetHeights(width / terrainCollumns * x, height / terrainRows, GenerateHeights());
+                terrainData.size = new Vector3(width, depth, height);
+                terrainData.SetHeights(width / terrainCollumns * x, height / terrainRows * y, GenerateHeights());
 
-
-                storeOffsetX += (width + 1) / terrainCollumns;
-                Debug.Log("offsetX = " + offsetX);
+                //storeOffsetX += (width + 1) / terrainCollumns;
+                //Debug.Log("offsetX = " + storeOffsetX);
             }
 
             //storeOffsetY =+ height / terrainRows;
             //Debug.Log("offsetY = " + storeOffsetY);
         }
-        
+
+
         return terrainData;
+    }
+
+    IEnumerator ApplyBiomeModifiers()
+    {
+        //change scale, depth and chance to spawn for each biome type
+        switch (biomeType)
+        {
+            //1 = forest
+            //2 = sea
+            //3 = mountain
+            //4 = dessert
+
+            case 1:
+                depth = forestDepth;
+                scale = forestScale;
+                break;
+            case 2:
+                depth = seaDepth;
+                scale = seaScale;
+                break;
+            case 3:
+                depth = mountainDepth;
+                scale = mountainScale;
+                break;
+            case 4:
+                depth = desertDepth;
+                scale = desertScale;
+                break;
+        }
+
+        yield return new WaitForSeconds(.1f);
     }
 
     float[,] GenerateHeights()
     {
         //heights represents how much area is being calcuated
-        float[,] heights = new float[(width + 1) / terrainCollumns, (height + 1) / terrainRows];
-        for (int x = 0; x < (width + 1) / terrainCollumns; x++)
+        float[,] heights = new float[(width) / terrainCollumns, (height) / terrainRows];
+        for (int x = 0; x < (width) / terrainCollumns; x++)
         {
-            for (int y = 0; y < (height + 1) / terrainRows; y++)
+            for (int y = 0; y < (height) / terrainRows; y++)
             {
                 heights[x, y] = CalculateHeight(x, y);
             }
         }
 
         return heights;
-    }
+    }   
 
     float CalculateHeight(int x, int y)
     {
-        //for each time this function is called, I can make it roll a dice, and depending on the result, it sets different types of parameter
-        //so that different types of biomes can be established
         //and to ensure that the transition is smooth, we can add onto the offset values, but its not correct atm
 
-        float xCoord = (x + offsetX) / width * scale;
-        float yCoord = (y + offsetY) / height * scale;
+        float xCoord = ((x + offsetX) / width * scale);
+        float yCoord = ((y + offsetY) / height * scale);
 
         //Debug.Log(" offsetY = " + yCoord);
 
