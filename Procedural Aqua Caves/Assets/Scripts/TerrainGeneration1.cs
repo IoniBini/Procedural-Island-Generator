@@ -74,7 +74,8 @@ public class TerrainGeneration1 : MonoBehaviour
             height *= 2;
         }
 
-        //GenerateFalloffMap(width / terrainCollumns);
+        //StartCoroutine(GenerateColourMap());
+
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
     }
@@ -101,6 +102,42 @@ public class TerrainGeneration1 : MonoBehaviour
             }
         }
         return terrainData;
+    }
+
+    IEnumerator GenerateColourMap()
+    {
+        Color[] colourMap = new Color[width * height];
+        float[,] heights = new float[(width), (height)];
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                
+                heights[x, y] = ((CalculateHeight(x, y) * depthModifier));// - map[x, y]);
+
+                float currentHeight = heights[x, y];
+                for (int i = 0; i < regions.Length; i++)
+                {
+                    if (currentHeight <= regions[i].biomeHeight)
+                    {
+                        colourMap[y * width + x] = regions[i].colour;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        Texture2D texture = new Texture2D(width, height);
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.SetPixels(colourMap);
+        texture.Apply();
+        terrainMat.diffuseTexture = texture;
+        terrainMat.tileSize = new Vector2(width, height);
+
+        yield return new WaitForSeconds(.1f);
     }
 
     IEnumerator ApplyBiomeModifiers()
@@ -162,36 +199,18 @@ public class TerrainGeneration1 : MonoBehaviour
         }
         #endregion
 
-        Color[] colourMap = new Color[width * height];
+        //Color[] colourMap = new Color[width * height];
+
         //the heights array represents how much area is being calcuated
         float[,] heights = new float[(width) / terrainCollumns, (height) / terrainRows];
         for (int x = 0; x < (width) / terrainCollumns; x++)
         {
             for (int y = 0; y < (height) / terrainRows; y++)
             {
-                heights[x, y] = ((CalculateHeight(x, y) * depthModifier) - map[x, y]);
-
+                heights[x, y] = ((CalculateHeight(x, y)) * depthModifier - map[x, y]);
                 float currentHeight = heights[x, y];
-                for (int i = 0; i < regions.Length; i++)
-                {
-                    if (currentHeight <= regions[i].height)
-                    {
-                        colourMap[y * width + x] = regions[i].colour;
-                        break;
-                    }
-                }
             }
         }
-
-        Debug.Log(width + " " + height);
-        Texture2D texture = new Texture2D(width, height);
-        texture.filterMode = FilterMode.Point;
-        texture.wrapMode = TextureWrapMode.Clamp;
-        texture.SetPixels(colourMap);
-        texture.Apply();
-
-        terrainMat.diffuseTexture = texture;
-        terrainMat.tileSize = new Vector2(width, height);
 
         return heights;
     }  
@@ -200,6 +219,8 @@ public class TerrainGeneration1 : MonoBehaviour
     {
         float xCoord = ((x + offsetX) / width * scale);
         float yCoord = ((y + offsetY) / height * scale);
+
+        //Debug.Log("X" + xCoord + " Y" + yCoord);
 
         return Mathf.PerlinNoise(xCoord, yCoord);
     }
@@ -220,7 +241,7 @@ public class TerrainGeneration1 : MonoBehaviour
     public struct TerrainType
     {
         public string name;
-        public float height;
+        [Range(0f, 1f)]public float biomeHeight;
         public Color colour;
     }
 }

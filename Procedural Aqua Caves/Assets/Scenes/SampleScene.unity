@@ -478,6 +478,63 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1070513706
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1070513707}
+  - component: {fileID: 1070513708}
+  m_Layer: 0
+  m_Name: ColourGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1070513707
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070513706}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 99, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8153622661572691045}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1070513708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070513706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 419eda940503aaf4fb37179529625515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rayHeight: 100
+  terrainMat: {fileID: 8574412962073106934, guid: 2430d19892d76b642b88c29cc6a2b18f,
+    type: 2}
+  regions:
+  - name: 
+    biomeHeight: 0.015
+    colour: {r: 1, g: 0, b: 0, a: 0}
+  - name: 
+    biomeHeight: 0.152
+    colour: {r: 0.02800417, g: 1, b: 0, a: 0}
+  - name: 
+    biomeHeight: 0.328
+    colour: {r: 0, g: 0.81771946, b: 1, a: 0}
 --- !u!1 &1226205404
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,12 +786,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8153622661572691049}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 724.0352, y: -0.0000076293945, z: -4.1715736}
+  m_LocalPosition: {x: 724.0352, y: 0, z: -4.1715736}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1070513707}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8153622661572691046
 MonoBehaviour:
@@ -748,28 +806,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b6b2646730aa1419ced32172e942c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrainResolution: 4
-  terrainRows: 2
-  terrainCollumns: 2
-  width: 256
-  height: 256
+  terrainResolution: 8
+  terrainRows: 10
+  terrainCollumns: 10
+  width: 4096
+  height: 4096
   terrainMat: {fileID: 8574412962073106934, guid: 2430d19892d76b642b88c29cc6a2b18f,
     type: 2}
   regions:
   - name: 
-    height: 0.2
+    biomeHeight: 0.27
     colour: {r: 1, g: 0, b: 0, a: 0}
   - name: 
-    height: 0.7
-    colour: {r: 0, g: 0, b: 0, a: 0}
-  desertDepth: 1.47
-  desertScale: 10
-  forestDepth: 0.52
-  forestScale: 10
-  mountainDepth: 1.17
-  mountainScale: 10
-  seaDepth: 1.7
-  seaScale: 10
+    biomeHeight: 0.54
+    colour: {r: 0.26364803, g: 1, b: 0, a: 0}
+  - name: 
+    biomeHeight: 0.832
+    colour: {r: 0, g: 0.5551176, b: 1, a: 0}
+  desertDepth: 0.07
+  desertScale: 50
+  forestDepth: 0.81
+  forestScale: 50
+  mountainDepth: 1.7
+  mountainScale: 25
+  seaDepth: 0.13
+  seaScale: 20
 --- !u!154 &8153622661572691047
 TerrainCollider:
   m_ObjectHideFlags: 0
