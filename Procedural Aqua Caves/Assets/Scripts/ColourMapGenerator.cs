@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ColourMapGenerator : MonoBehaviour
 {
-    public float rayHeight = 100;
+    public float rayHeight = 200;
     public TerrainLayer terrainMat;
     public TerrainType[] regions;
 
@@ -52,7 +52,7 @@ public class ColourMapGenerator : MonoBehaviour
                     }
                 }
 
-                transform.position = new Vector3(transform.parent.position.x + i, rayHeight - 1, transform.parent.position.y + j);
+                transform.position = new Vector3(transform.parent.position.x + i, transform.parent.position.y + rayHeight - 1f, transform.parent.position.z + j);
                 //Debug.Log("x" + transform.position.x);
             }
         }

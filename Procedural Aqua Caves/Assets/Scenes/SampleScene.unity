@@ -522,19 +522,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419eda940503aaf4fb37179529625515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayHeight: 100
+  rayHeight: 150
   terrainMat: {fileID: 8574412962073106934, guid: 2430d19892d76b642b88c29cc6a2b18f,
     type: 2}
   regions:
   - name: 
     biomeHeight: 0.015
-    colour: {r: 1, g: 0, b: 0, a: 0}
+    colour: {r: 0, g: 0.77877903, b: 1, a: 0}
   - name: 
-    biomeHeight: 0.152
-    colour: {r: 0.02800417, g: 1, b: 0, a: 0}
+    biomeHeight: 0.218
+    colour: {r: 0.9772253, g: 1, b: 0, a: 0}
   - name: 
-    biomeHeight: 0.328
-    colour: {r: 0, g: 0.81771946, b: 1, a: 0}
+    biomeHeight: 0.422
+    colour: {r: 0.5943396, g: 0.35992122, b: 0.10933607, a: 0}
+  - name: 
+    biomeHeight: 0.912
+    colour: {r: 0, g: 1, b: 0.046749115, a: 0}
 --- !u!1 &1226205404
 GameObject:
   m_ObjectHideFlags: 0
@@ -823,13 +826,13 @@ MonoBehaviour:
   - name: 
     biomeHeight: 0.832
     colour: {r: 0, g: 0.5551176, b: 1, a: 0}
-  desertDepth: 0.07
+  desertDepth: 0.32
   desertScale: 50
   forestDepth: 0.81
   forestScale: 50
   mountainDepth: 1.7
   mountainScale: 25
-  seaDepth: 0.13
+  seaDepth: 0.1
   seaScale: 20
 --- !u!154 &8153622661572691047
 TerrainCollider:
