@@ -476,7 +476,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1226205404
 GameObject:
@@ -570,7 +570,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1232560729
 GameObject:
@@ -635,7 +635,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1232560733
 MeshFilter:
@@ -687,68 +687,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &1589638192
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1589638196}
-  - component: {fileID: 1589638195}
-  - component: {fileID: 1589638194}
-  - component: {fileID: 1589638193}
-  m_Layer: 0
-  m_Name: Terrain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
---- !u!114 &1589638193
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589638192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73b6b2646730aa1419ced32172e942c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrainResolution: 2
-  terrainRows: 2
-  terrainCollumns: 2
-  width: 64
-  height: 64
-  desertDepth: 0.46
-  desertScale: 10
-  forestDepth: 0.8
-  forestScale: 10
-  mountainDepth: 1.72
-  mountainScale: 10
-  seaDepth: 0
-  seaScale: 10
---- !u!154 &1589638194
-TerrainCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589638192}
-  m_Material: {fileID: 0}
-  m_Enabled: 1
-  m_TerrainData: {fileID: 15600000, guid: 42312afee59a3164a9130b1577607804, type: 2}
-  m_EnableTreeColliders: 1
---- !u!218 &1589638195
+--- !u!218 &8153622661572691044
 Terrain:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589638192}
+  m_GameObject: {fileID: 8153622661572691049}
   m_Enabled: 1
   serializedVersion: 6
   m_TerrainData: {fileID: 15600000, guid: 42312afee59a3164a9130b1577607804, type: 2}
@@ -776,18 +721,82 @@ Terrain:
   m_GroupingID: 0
   m_RenderingLayerMask: 1
   m_AllowAutoConnect: 1
---- !u!4 &1589638196
+--- !u!4 &8153622661572691045
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589638192}
+  m_GameObject: {fileID: 8153622661572691049}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 720.3, y: 0, z: 0}
+  m_LocalPosition: {x: 724.0352, y: -0.0000076293945, z: -4.1715736}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8153622661572691046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8153622661572691049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b6b2646730aa1419ced32172e942c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terrainResolution: 4
+  terrainRows: 2
+  terrainCollumns: 2
+  width: 256
+  height: 256
+  terrainMat: {fileID: 8574412962073106934, guid: 2430d19892d76b642b88c29cc6a2b18f,
+    type: 2}
+  regions:
+  - name: 
+    height: 0.2
+    colour: {r: 1, g: 0, b: 0, a: 0}
+  - name: 
+    height: 0.7
+    colour: {r: 0, g: 0, b: 0, a: 0}
+  desertDepth: 1.47
+  desertScale: 10
+  forestDepth: 0.52
+  forestScale: 10
+  mountainDepth: 1.17
+  mountainScale: 10
+  seaDepth: 1.7
+  seaScale: 10
+--- !u!154 &8153622661572691047
+TerrainCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8153622661572691049}
+  m_Material: {fileID: 0}
+  m_Enabled: 1
+  m_TerrainData: {fileID: 15600000, guid: 42312afee59a3164a9130b1577607804, type: 2}
+  m_EnableTreeColliders: 1
+--- !u!1 &8153622661572691049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8153622661572691045}
+  - component: {fileID: 8153622661572691044}
+  - component: {fileID: 8153622661572691047}
+  - component: {fileID: 8153622661572691046}
+  m_Layer: 0
+  m_Name: TerrainUpdated
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1

@@ -19,7 +19,11 @@ public class TerrainGeneration1 : MonoBehaviour
     [HideInInspector] public int width = 32; //x-axis of the terrain
     [HideInInspector] public int height = 32; //z-axis
 
-    private int maxDepth = 30; //y-axis
+    public TerrainLayer terrainMat;
+
+    public TerrainType[] regions;
+
+    private int maxDepth = 100; //y-axis
     private float scale = 20f;
     private float depthModifier;
 
@@ -132,6 +136,7 @@ public class TerrainGeneration1 : MonoBehaviour
 
     float[,] GenerateHeights()
     {
+        #region Falloff Map Generator
         //https://www.youtube.com/watch?v=COmtTyLCd6I
         var size = (width) / terrainCollumns;
         float[,] map = new float[size, size];
@@ -150,24 +155,46 @@ public class TerrainGeneration1 : MonoBehaviour
 
         static float Evaluate(float value)
         {
-            float a = 3;
-            float b = 2.2f;
+            float a = 3f;
+            float b = 4f;
 
             return Mathf.Pow(value, a) / (Mathf.Pow(value, a) + Mathf.Pow(b - b * value, a));
         }
+        #endregion
 
+        Color[] colourMap = new Color[width * height];
         //the heights array represents how much area is being calcuated
         float[,] heights = new float[(width) / terrainCollumns, (height) / terrainRows];
         for (int x = 0; x < (width) / terrainCollumns; x++)
         {
             for (int y = 0; y < (height) / terrainRows; y++)
             {
-                heights[x, y] = (Mathf.Clamp01(CalculateHeight(x, y) * depthModifier) - map[x, y]);
+                heights[x, y] = ((CalculateHeight(x, y) * depthModifier) - map[x, y]);
+
+                float currentHeight = heights[x, y];
+                for (int i = 0; i < regions.Length; i++)
+                {
+                    if (currentHeight <= regions[i].height)
+                    {
+                        colourMap[y * width + x] = regions[i].colour;
+                        break;
+                    }
+                }
             }
         }
 
+        Debug.Log(width + " " + height);
+        Texture2D texture = new Texture2D(width, height);
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.SetPixels(colourMap);
+        texture.Apply();
+
+        terrainMat.diffuseTexture = texture;
+        terrainMat.tileSize = new Vector2(width, height);
+
         return heights;
-    }   
+    }  
 
     float CalculateHeight(int x, int y)
     {
@@ -187,5 +214,13 @@ public class TerrainGeneration1 : MonoBehaviour
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
 
         maxDepth = tempDepth;
+    }
+
+    [System.Serializable]
+    public struct TerrainType
+    {
+        public string name;
+        public float height;
+        public Color colour;
     }
 }
