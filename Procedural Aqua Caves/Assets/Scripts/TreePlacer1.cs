@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class TreePlacer1 : MonoBehaviour
 {
+    private Color currentColor;
+
     [Header("Positioning")]
     private Vector2 Start;
     public Vector2 Size = new Vector2(1000f, 1000f);
@@ -38,20 +40,44 @@ public class TreePlacer1 : MonoBehaviour
             //If it hit an object on an invalid layer, we also stop here
             if (!MaskContainsLayer(ValidLayers, hit.collider.gameObject.layer)) continue;
 
+            var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
+            var texture = terrainGeneration.terrainMat.diffuseTexture;
+
+            Vector2 pixelUV = hit.textureCoord;
+            pixelUV.x *= texture.width;
+            pixelUV.y *= texture.height;
+            Vector2 tiling = texture.texelSize;
+            currentColor = texture.GetPixel(Mathf.FloorToInt(pixelUV.x * tiling.x), Mathf.FloorToInt(pixelUV.y * tiling.y));
+
             //But if it *does* hit something, a bunch of information about the ray hit is stored in the 'hit' variable
-            PlaceTreeAt(hit.point);
+            if (FindIndexFromColor(currentColor) >= 0) PlaceTreeAt(hit.point);
         }
     }
 
     //Given a position that we successfully touch the terrain at, 
     public void PlaceTreeAt(Vector3 position)
     {
-        //Spawns a random prefab at the provided position - and gives it a random rotation and scale
-        var newObj = Instantiate(TreePrefabs[Random.Range(0, TreePrefabs.Length)]);
-        newObj.transform.parent = transform;
-        newObj.transform.position = position;
-        newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
-        newObj.transform.localScale = Vector3.one * Random.Range(1f - SizeVariance, 1f + SizeVariance);
+        var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
+
+        //for (int i = 0; i >= terrainGeneration.colourPerHeight.Length; i++)
+        {
+            //if (colorNumber == i)
+            {
+                //if (terrainGeneration.colourPerHeight[i].biomeTrees[0] == null)
+                {
+                    //break;
+                }
+
+                //Spawns a random prefab at the provided position - and gives it a random rotation and scale
+                var newObj = Instantiate(terrainGeneration.colourPerHeight[0].biomeTrees[0]);
+                newObj.transform.parent = transform;
+                newObj.transform.position = position;
+                newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
+                newObj.transform.localScale = Vector3.one * Random.Range(1f - SizeVariance, 1f + SizeVariance);
+
+                //break;
+            }
+        }              
 
         //We need to do this to make sure that our new object will be seen by other raycasts etc. this frame
         Physics.SyncTransforms();
@@ -74,6 +100,30 @@ public class TreePlacer1 : MonoBehaviour
     public static bool MaskContainsLayer(LayerMask mask, int layer)
     {
         return mask == (mask | (1 << layer));
+    }
+
+    private int FindIndexFromColor(Color color)
+    {
+        var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
+
+        for (int i = 0; i < terrainGeneration.colourPerHeight.Length; i++)
+        {
+            //Debug.Log("found color = " + color.ToString());
+            //Debug.Log("stored color = " + terrainGeneration.colourPerHeight[i].biomeColour.ToString());
+
+            if (terrainGeneration.colourPerHeight[i].biomeColour == color)
+            {
+                //Debug.Log("colour " + i + " found");
+                return i;
+            }
+            else
+            {
+                //Debug.Log("invalid colour");
+                //continue;
+            }
+        }
+
+        return -1;
     }
 
     private void OnDrawGizmosSelected()
