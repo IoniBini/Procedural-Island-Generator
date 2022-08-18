@@ -5,6 +5,7 @@ using UnityEngine;
 public class TreePlacer : MonoBehaviour
 {
     public TerrainLayer terrainMat;
+    //public Texture2D pngTerrainTexture;
 
     public bool destroyTreesOnGenerate = true;
 
@@ -16,11 +17,6 @@ public class TreePlacer : MonoBehaviour
 
     //the latest spawned obj
     GameObject spawnedObj;
-
-    //a public array that can be manually populated in the inspector with the colors present in the map
-    public Color[] colors;
-    //in case you want to specify what map should be used, I have made the texture public so you can use a different one if need be
-    public Texture2D imageMap;
 
     //a variable that the lower it is, the less likley it is for a tree to spawn, and the higher, the more likely
     [Range(1, 10)]
@@ -40,28 +36,11 @@ public class TreePlacer : MonoBehaviour
     [Range(10, 1000)]
     public int raycastHeight;
 
-    //the color picker part of this code is based on this video: https://www.youtube.com/watch?v=P_nyEPAcWKE&list=PLuKojHpFPld-V8DFDkd2yXnQdZbv9FdD-&index=72&t=600s
-    //I have heavily modified it for the purposes of this code though it is worth noting
-
-    //this function will be fed a color which is to be represented as a color from the array, and returns the said number back
-    private int FindIndexFromColor(Color color)
-    {
-        for (int i = 0; i < colors.Length; i++)
-        {
-            if (colors[i] == color)
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     [ContextMenu("Maximise Tree Placement Area")]
     public void MaximiseTreePlacementArea()
     {
         //resets the position of the tree generator
-        transform.position = new Vector3(transform.parent.position.x, transform.parent.position.y + raycastHeight - 1, transform.parent.position.z);
+        //transform.position = new Vector3(transform.parent.position.x, transform.parent.position.y + raycastHeight - 1, transform.parent.position.z);
 
         var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
 
@@ -101,7 +80,7 @@ public class TreePlacer : MonoBehaviour
         }
 
         //resets the position of the tree generator
-        transform.position = new Vector3(transform.parent.position.x, transform.parent.position.y + raycastHeight - 1, transform.parent.position.z);
+        //transform.position = new Vector3(transform.parent.position.x, transform.parent.position.y + raycastHeight - 1, transform.parent.position.z);
 
         //stores the current position of the spawner so that it can be reset later
         var resetAllAxis = transform.position;
@@ -109,19 +88,10 @@ public class TreePlacer : MonoBehaviour
         //a 2d for loop, the first is for the collumns, the second is for the rows
         for (int j = 0; j <= treesPerColumn; j++)
         {
-            var resetXAxis = transform.position.x;
-
             for (int i = 0; i <= treesPerRow; i++)
             {
                 //int layerMask = 1 << 8;
                 //layerMask = ~layerMask;
-
-                transform.position = new Vector3(transform.parent.position.x + i, transform.parent.position.y + raycastHeight - 1f, transform.parent.position.z + j);
-
-                //variables that the raycast use to determine the hit location
-                Vector3 localOffset = new Vector3(0, 0, 1);
-                Vector3 worldOffset = transform.rotation * localOffset;
-                Vector3 spawnPosition = transform.position + worldOffset;
 
                 //names the hit point of the raycast
                 RaycastHit hit;
@@ -134,27 +104,33 @@ public class TreePlacer : MonoBehaviour
                     if (hit.transform.gameObject.layer != 8)
                     {
                         //Renderer renderer = hit.transform.GetComponent<MeshRenderer>();
-                        Texture2D texture = terrainMat.diffuseTexture as Texture2D;
                         Vector2 pixelUV = hit.textureCoord;
-                        pixelUV.x *= texture.width;
-                        pixelUV.y *= texture.height;
-                        Vector2 tiling = terrainMat.tileSize;
-                        Color color = imageMap.GetPixel(Mathf.FloorToInt(pixelUV.x * tiling.x), Mathf.FloorToInt(pixelUV.y * tiling.y));
-                        /*Debug.Log("blue: " + color.b);
+                        //Debug.Log(hit.textureCoord);
+
+                        var objToBeSpawned = desertTrees[Random.Range(0, desertTrees.Length)];
+                        spawnedObj = Instantiate(objToBeSpawned, hit.point, Quaternion.identity) as GameObject;
+
+                        /*pixelUV.x *= pngTerrainTexture.width;
+                        pixelUV.y *= pngTerrainTexture.height;
+                        Vector2 tiling = pngTerrainTexture.texelSize;
+                        Color color = pngTerrainTexture.GetPixel(Mathf.FloorToInt(pixelUV.x * tiling.x), Mathf.FloorToInt(pixelUV.y * tiling.y));
+                        Debug.Log("blue: " + color.b);
                         Debug.Log("green: " + color.g);
-                        Debug.Log("red: " + color.r);*/
+                        Debug.Log("red: " + color.r);
+                        //Debug.Log(color.ToString());
 
 
                         int index = FindIndexFromColor(color);
-                        //Debug.Log("found color: " + index);
 
                         //depending on what color is found, a different array of prefabs is chosen to be spawned from
                         if (index == 0)
                         {
                             var chanceToSpawn = Random.Range(spawnChanceDesert, 10);
 
-                            if (chanceToSpawn <= spawnChanceDesert)
+                            //if (chanceToSpawn <= spawnChanceDesert)
                             {
+                                //Debug.Log("spawn complete");
+
                                 var objToBeSpawned = desertTrees[Random.Range(0, desertTrees.Length)];
                                 spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
                                 spawnedObj.transform.position = hit.point;
@@ -172,8 +148,10 @@ public class TreePlacer : MonoBehaviour
                         {
                             var chanceToSpawn = Random.Range(spawnChanceSea, 10);
 
-                            if (chanceToSpawn <= spawnChanceSea)
+                            //if (chanceToSpawn <= spawnChanceSea)
                             {
+                                //Debug.Log("spawn complete");
+
                                 var objToBeSpawned = seaTrees[Random.Range(0, seaTrees.Length)];
                                 spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
                                 spawnedObj.transform.position = hit.point;
@@ -190,8 +168,10 @@ public class TreePlacer : MonoBehaviour
                         {
                             var chanceToSpawn = Random.Range(spawnChanceTundra, 10);
 
-                            if (chanceToSpawn <= spawnChanceTundra)
+                            //if (chanceToSpawn <= spawnChanceTundra)
                             {
+                                //Debug.Log("spawn complete");
+
                                 var objToBeSpawned = tundraTrees[Random.Range(0, tundraTrees.Length)];
                                 spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
                                 spawnedObj.transform.position = hit.point;
@@ -207,8 +187,10 @@ public class TreePlacer : MonoBehaviour
                         {
                             var chanceToSpawn = Random.Range(spawnChanceTropical, 10);
 
-                            if (chanceToSpawn <= spawnChanceTropical)
+                            //if (chanceToSpawn <= spawnChanceTropical)
                             {
+                                //Debug.Log("spawn complete");
+
                                 var objToBeSpawned = tropicalTrees[Random.Range(0, tropicalTrees.Length)];
                                 spawnedObj = Instantiate(objToBeSpawned, spawnPosition, Quaternion.identity) as GameObject;
                                 spawnedObj.transform.position = hit.point;
@@ -219,17 +201,47 @@ public class TreePlacer : MonoBehaviour
                                 var objRandomRotationZ = Random.Range(-10f, 10f);
                                 spawnedObj.transform.localRotation = Quaternion.Euler(objRandomRotationX, objRandomRotationY, objRandomRotationZ);
                             }
-                        }
+                        }*/
                     }     
                 }
                 else if (Physics.Raycast(transform.position + new Vector3(0, 0, 1), down, out hit, raycastHeight) == false)
                 {
                     break;
                 }
+
+                transform.position = new Vector3(transform.position.x + j, transform.position.y + raycastHeight - 1f, transform.position.z + i);
             }
         }
 
-        transform.position = new Vector3(resetAllAxis.x, resetAllAxis.y, resetAllAxis.z);
+        //transform.position = new Vector3(resetAllAxis.x, resetAllAxis.y, resetAllAxis.z);
+    }
+
+    //the color picker part of this code is based on this video: https://www.youtube.com/watch?v=P_nyEPAcWKE&list=PLuKojHpFPld-V8DFDkd2yXnQdZbv9FdD-&index=72&t=600s
+    //I have heavily modified it for the purposes of this code though it is worth noting
+
+    //this function will be fed a color which is to be represented as a color from the array, and returns the said number back
+    private int FindIndexFromColor(Color color)
+    {
+        var terrainGeneration = GameObject.Find("TerrainUpdated").GetComponent<TerrainGeneration1>();
+
+        for (int i = 0; i < terrainGeneration.colourPerHeight.Length; i++)
+        {
+            //Debug.Log("found color = " + color.ToString());
+            //Debug.Log("stored color = " + terrainGeneration.colourPerHeight[i].biomeColour.ToString());
+
+            if (terrainGeneration.colourPerHeight[i].biomeColour == color)
+            {
+                //Debug.Log("colour " + i + " found");
+                return i;
+            }
+            else
+            {
+                //Debug.Log("invalid colour");
+                //continue;
+            }
+        }
+
+        return -1;
     }
 
     private void OnDrawGizmosSelected()

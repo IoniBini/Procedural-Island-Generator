@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class ColourMapGenerator : MonoBehaviour
 {
@@ -60,11 +61,18 @@ public class ColourMapGenerator : MonoBehaviour
             }
         }
 
-        Texture2D texture = new Texture2D(terrainGeneration.width, terrainGeneration.height);
+        //https://answers.unity.com/questions/1331297/how-to-save-a-texture2d-into-a-png.html
+
+        Texture2D texture = new Texture2D(terrainGeneration.width, terrainGeneration.height, TextureFormat.RGB24, false);
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.SetPixels(colourMap);
         texture.Apply();
+
+        /*byte[] bytes = texture.EncodeToPNG();
+        var dirPath = Application.dataPath + "/TerrainImages";
+        File.WriteAllBytes(dirPath + "TerrainCapture" + ".png", bytes);*/
+
         terrainMat.diffuseTexture = texture;
         terrainMat.tileSize = new Vector2(terrainGeneration.width, terrainGeneration.height);
 
