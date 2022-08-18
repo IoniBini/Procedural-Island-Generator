@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class ColourMapGenerator : MonoBehaviour
 {
-    public float rayHeight = 200;
+    public float rayHeight = 150;
     public TerrainLayer terrainMat;
+    public Texture2D defaultTerrainColour;
     public TerrainType[] regions;
 
     [System.Serializable]
@@ -24,6 +25,7 @@ public class ColourMapGenerator : MonoBehaviour
         var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
 
         Color[] colourMap = new Color[terrainGeneration.width * terrainGeneration.height];
+        Debug.Log("array max size: " + terrainGeneration.width * terrainGeneration.height);
 
         for (int i = 0; i <= terrainGeneration.width; i++)
         {
@@ -46,7 +48,17 @@ public class ColourMapGenerator : MonoBehaviour
                     {
                         if (1 - normalizedHeight <= regions[x].biomeHeight)
                         {
-                            colourMap[j * terrainGeneration.width + i] = regions[x].colour;
+                            //impedes the loop to outgrowing the array boudnries
+                            if(j * terrainGeneration.width + i + 1 >= terrainGeneration.width * terrainGeneration.height)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                colourMap[j * terrainGeneration.width + i] = regions[x].colour;
+                            }
+
+                            //Debug.Log(j * terrainGeneration.width + i);
                             break;
                         }
                     }
@@ -66,5 +78,11 @@ public class ColourMapGenerator : MonoBehaviour
         terrainMat.tileSize = new Vector2(terrainGeneration.width, terrainGeneration.height);
 
         transform.position = new Vector3(transform.parent.position.x, transform.parent.position.y + rayHeight - 1f, transform.parent.position.z);
+    }
+
+    [ContextMenu("Clear Material")]
+    public void ClearTerrainMaterial()
+    {
+        terrainMat.diffuseTexture = defaultTerrainColour;
     }
 }

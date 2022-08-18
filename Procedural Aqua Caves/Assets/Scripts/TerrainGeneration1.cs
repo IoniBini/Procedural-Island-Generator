@@ -12,8 +12,7 @@ public class TerrainGeneration1 : MonoBehaviour
     //to avoid causing errors due to the resolution of the terrain not being in multiples of the power of 2, I have created these variables to multiply with
     //I have limited it to 8 because any more than that will escape the bounds of the noise map max size
     [Range(1, 8)] public int terrainResolution = 1;
-    public int terrainRows = 1;
-    public int terrainCollumns = 1;
+    public int gridNumber = 1;
 
     //I dont want these to be changed, so I'll hide them from view
     [HideInInspector] public int width = 32; //x-axis of the terrain
@@ -21,7 +20,7 @@ public class TerrainGeneration1 : MonoBehaviour
 
     public TerrainLayer terrainMat;
 
-    public TerrainType[] regions;
+    public TerrainType[] biomes;
 
     private int maxDepth = 100; //y-axis
     private float scale = 20f;
@@ -34,23 +33,6 @@ public class TerrainGeneration1 : MonoBehaviour
     private float offsetY = 0f;// equivalent to the height
 
     private int biomeType;
-    //1 = forest
-    //2 = sea
-    //3 = mountain
-    //4 = dessert
-
-    [Header("Dessert Biome Variables")]
-    [Range(0f, 2f)]public float desertDepth = 1f;
-    public float desertScale = 1f;
-    [Header("Forest Biome Variables")]
-    [Range(0f, 2f)] public float forestDepth = 1f;
-    public float forestScale = 1f;
-    [Header("Mountain Biome Variables")]
-    [Range(0f, 2f)] public float mountainDepth = 1f;
-    public float mountainScale = 1f;
-    [Header("Sea Biome Variables")]
-    [Range(0f, 2f)] public float seaDepth = 1f;
-    public float seaScale = 1f;
 
 
     [ContextMenu("GenerateTerrain")]
@@ -85,11 +67,11 @@ public class TerrainGeneration1 : MonoBehaviour
         terrainData.heightmapResolution = width;
         terrainData.size = new Vector3(width, maxDepth, height);
 
-        for (int y = 0; y < terrainRows; y++)
+        for (int y = 0; y < gridNumber; y++)
         {
-            for (int x = 0; x < terrainCollumns; x++)
+            for (int x = 0; x < gridNumber; x++)
             {
-                biomeType = Random.Range(1, 4);
+                biomeType = Random.Range(0, biomes.Length);
 
                 StartCoroutine(ApplyBiomeModifiers());
 
@@ -98,7 +80,7 @@ public class TerrainGeneration1 : MonoBehaviour
 
                 //the first two floats show where the heights begin being calculated on the terrain plane, the generate heights determines the noise
                 //itself as well as how much area is being calculated starting from the previously established points
-                terrainData.SetHeights(width / terrainCollumns * x, height / terrainRows * y, GenerateHeights());
+                terrainData.SetHeights(width / gridNumber * x, height / gridNumber * y, GenerateHeights());
             }
         }
         return terrainData;
@@ -106,7 +88,7 @@ public class TerrainGeneration1 : MonoBehaviour
 
     IEnumerator GenerateColourMap()
     {
-        Color[] colourMap = new Color[width * height];
+        /*Color[] colourMap = new Color[width * height];
         float[,] heights = new float[(width), (height)];
 
         for (int y = 0; y < height; y++)
@@ -119,7 +101,7 @@ public class TerrainGeneration1 : MonoBehaviour
                 float currentHeight = heights[x, y];
                 for (int i = 0; i < regions.Length; i++)
                 {
-                    if (currentHeight <= regions[i].biomeHeight)
+                    if (currentHeight <= regions[i].biomeDepth)
                     {
                         colourMap[y * width + x] = regions[i].colour;
                         break;
@@ -135,7 +117,7 @@ public class TerrainGeneration1 : MonoBehaviour
         texture.SetPixels(colourMap);
         texture.Apply();
         terrainMat.diffuseTexture = texture;
-        terrainMat.tileSize = new Vector2(width, height);
+        terrainMat.tileSize = new Vector2(width, height);*/
 
         yield return new WaitForSeconds(.1f);
     }
@@ -143,29 +125,14 @@ public class TerrainGeneration1 : MonoBehaviour
     IEnumerator ApplyBiomeModifiers()
     {
         //change scale, depth and chance to spawn for each biome type
-        switch (biomeType)
+        for (int x = 0; x < biomes.Length; x++)
         {
-            //1 = forest
-            //2 = sea
-            //3 = mountain
-            //4 = dessert
-
-            case 1:
-                depthModifier = forestDepth;
-                scale = forestScale;
+            if (x == biomeType)
+            {
+                depthModifier = biomes[x].biomeDepth;
+                scale = biomes[x].biomeScale;
                 break;
-            case 2:
-                depthModifier = seaDepth;
-                scale = seaScale;
-                break;
-            case 3:
-                depthModifier = mountainDepth;
-                scale = mountainScale;
-                break;
-            case 4:
-                depthModifier = desertDepth;
-                scale = desertScale;
-                break;
+            }
         }
 
         yield return new WaitForSeconds(.1f);
@@ -175,7 +142,7 @@ public class TerrainGeneration1 : MonoBehaviour
     {
         #region Falloff Map Generator
         //https://www.youtube.com/watch?v=COmtTyLCd6I
-        var size = (width) / terrainCollumns;
+        var size = (width) / gridNumber;
         float[,] map = new float[size, size];
 
         for (int i = 0; i < size; i++)
@@ -199,13 +166,11 @@ public class TerrainGeneration1 : MonoBehaviour
         }
         #endregion
 
-        //Color[] colourMap = new Color[width * height];
-
         //the heights array represents how much area is being calcuated
-        float[,] heights = new float[(width) / terrainCollumns, (height) / terrainRows];
-        for (int x = 0; x < (width) / terrainCollumns; x++)
+        float[,] heights = new float[(width) / gridNumber, (height) / gridNumber];
+        for (int x = 0; x < (width) / gridNumber; x++)
         {
-            for (int y = 0; y < (height) / terrainRows; y++)
+            for (int y = 0; y < (height) / gridNumber; y++)
             {
                 heights[x, y] = ((CalculateHeight(x, y)) * depthModifier - map[x, y]);
                 float currentHeight = heights[x, y];
@@ -240,8 +205,8 @@ public class TerrainGeneration1 : MonoBehaviour
     [System.Serializable]
     public struct TerrainType
     {
-        public string name;
-        [Range(0f, 1f)]public float biomeHeight;
-        public Color colour;
+        public string biomeName;
+        [Range(0f, 1f)]public float biomeDepth;
+        public float biomeScale;
     }
 }
