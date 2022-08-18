@@ -503,7 +503,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1070513706}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 99, z: 0}
+  m_LocalPosition: {x: 0, y: 149, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -567,6 +567,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dc97063bdfb609468080643f70d6c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  terrainMat: {fileID: 8574412962073106934, guid: 2430d19892d76b642b88c29cc6a2b18f,
+    type: 2}
   tropicalTrees:
   - {fileID: 180214, guid: aec50823ac9be1b45b5778c3b6c0f51a, type: 3}
   - {fileID: 136328, guid: 613b4cc8c589ad8458e792ae21891bef, type: 3}
@@ -600,20 +602,20 @@ MonoBehaviour:
   - {fileID: 5186735023776687486, guid: ac8efb728f1fb9b4092c4df591c827ca, type: 3}
   - {fileID: 38335279662140195, guid: 34d3f526198dae440bb2ce6005d86055, type: 3}
   colors:
-  - {r: 1, g: 0.9843138, b: 0.1764706, a: 1}
-  - {r: 0, g: 0.7294118, b: 1, a: 1}
+  - {r: 0.9764706, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0.78039217, b: 1, a: 1}
   - {r: 0.2901961, g: 0.30588236, b: 0.2901961, a: 1}
-  - {r: 0.43921572, g: 0.32156864, b: 0.13725491, a: 1}
+  - {r: 0.59607846, g: 0.36078432, b: 0.10980392, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 0.23529413, g: 0.7803922, b: 0.2784314, a: 1}
+  - {r: 0, g: 1, b: 0.047058824, a: 1}
   - {r: 0.16078432, g: 0.56078434, b: 0.21568629, a: 1}
   imageMap: {fileID: 2800000, guid: 3307852a2581f984f89127d29f43d016, type: 3}
   spawnChanceDesert: 10
   spawnChanceTundra: 3
   spawnChanceTropical: 8
   spawnChanceSea: 8
-  treesPerRow: 69
-  treesPerColumn: 44
+  treesPerRow: 38
+  treesPerColumn: 25
   extrasPerRow: 179
   extrasPerColumn: 44
   raycastHeight: 286
@@ -625,7 +627,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1226205404}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -219.8, y: 248.9, z: 182.8}
+  m_LocalPosition: {x: 978.6, y: 248.9, z: -1.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -809,11 +811,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b6b2646730aa1419ced32172e942c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrainResolution: 8
-  terrainRows: 10
-  terrainCollumns: 10
-  width: 4096
-  height: 4096
+  terrainResolution: 4
+  terrainRows: 5
+  terrainCollumns: 5
+  width: 256
+  height: 256
   terrainMat: {fileID: 8574412962073106934, guid: 2430d19892d76b642b88c29cc6a2b18f,
     type: 2}
   regions:
@@ -827,11 +829,11 @@ MonoBehaviour:
     biomeHeight: 0.832
     colour: {r: 0, g: 0.5551176, b: 1, a: 0}
   desertDepth: 0.32
-  desertScale: 50
-  forestDepth: 0.81
-  forestScale: 50
-  mountainDepth: 1.7
-  mountainScale: 25
+  desertScale: 20
+  forestDepth: 0.67
+  forestScale: 20
+  mountainDepth: 1.12
+  mountainScale: 20
   seaDepth: 0.1
   seaScale: 20
 --- !u!154 &8153622661572691047

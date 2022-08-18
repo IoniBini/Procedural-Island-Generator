@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class TreePlacer : MonoBehaviour
 {
+    public TerrainLayer terrainMat;
+
     //arrays for what you want to populate the scene with
     public GameObject[] tropicalTrees;
     public GameObject[] tundraTrees;
@@ -30,9 +32,9 @@ public class TreePlacer : MonoBehaviour
     public int spawnChanceSea;
 
     //sliders for the amount of objs you wish to spawn in the x and z axis
-    [Range(1, 100)]
+    [Range(1, 1000)]
     public int treesPerRow;
-    [Range(1, 100)]
+    [Range(1, 1000)]
     public int treesPerColumn;
     [Range(1, 200)]
     public int extrasPerRow;
@@ -124,12 +126,12 @@ public class TreePlacer : MonoBehaviour
                     //layer 8 contains all the things that the raycast should avoid, hence it will only spawn anythig if it is not in that layer
                     if (hit.transform.gameObject.layer != 8)
                     {
-                        Renderer renderer = hit.transform.GetComponent<MeshRenderer>();
-                        Texture2D texture = renderer.sharedMaterial.mainTexture as Texture2D;
+                        //Renderer renderer = hit.transform.GetComponent<MeshRenderer>();
+                        Texture2D texture = terrainMat.diffuseTexture as Texture2D;
                         Vector2 pixelUV = hit.textureCoord;
                         pixelUV.x *= texture.width;
                         pixelUV.y *= texture.height;
-                        Vector2 tiling = renderer.sharedMaterial.mainTextureScale;
+                        Vector2 tiling = terrainMat.tileSize;
                         Color color = imageMap.GetPixel(Mathf.FloorToInt(pixelUV.x * tiling.x), Mathf.FloorToInt(pixelUV.y * tiling.y));
                         /*Debug.Log("blue: " + color.b);
                         Debug.Log("green: " + color.g);
