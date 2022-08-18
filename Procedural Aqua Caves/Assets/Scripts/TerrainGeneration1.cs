@@ -21,6 +21,7 @@ public class TerrainGeneration1 : MonoBehaviour
     public TerrainLayer terrainMat;
 
     public TerrainType[] biomes;
+    public ColourPerHeight[] colourPerHeight;
 
     private int maxDepth = 100; //y-axis
     private float scale = 20f;
@@ -34,8 +35,14 @@ public class TerrainGeneration1 : MonoBehaviour
 
     private int biomeType;
 
+    [ContextMenu("Generate Everything")]
+    private void GenerateEverything()
+    {
+        TerrainPrep();
+        GenerateColourMapParent();
+    }
 
-    [ContextMenu("GenerateTerrain")]
+    [ContextMenu("Only Generate Terrain")]
     private void TerrainPrep()
     {
         //delete the previous stuff prior to commencing
@@ -190,7 +197,14 @@ public class TerrainGeneration1 : MonoBehaviour
         return Mathf.PerlinNoise(xCoord, yCoord);
     }
 
-    [ContextMenu("ClearTerrain")]
+    [ContextMenu("Only Generate Colourmap")]
+    private void GenerateColourMapParent()
+    {
+        var colourMapGenerator = GetComponentInChildren<ColourMapGenerator>();
+        colourMapGenerator.GenerateColourMap();
+    }
+
+    [ContextMenu("Clear Everything")]
     private void ClearTerrain()
     {
         var tempDepth = maxDepth;
@@ -200,6 +214,9 @@ public class TerrainGeneration1 : MonoBehaviour
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
 
         maxDepth = tempDepth;
+
+        var colourMapGenerator = GetComponentInChildren<ColourMapGenerator>();
+        colourMapGenerator.ClearTerrainMaterial();
     }
 
     [System.Serializable]
@@ -208,5 +225,13 @@ public class TerrainGeneration1 : MonoBehaviour
         public string biomeName;
         [Range(0f, 1f)]public float biomeDepth;
         public float biomeScale;
+    }
+
+    [System.Serializable]
+    public struct ColourPerHeight
+    {
+        [Range(0f, 1f)] public float colourDepth;
+        public Color biomeColour;
+        public GameObject[] biomeTrees;
     }
 }

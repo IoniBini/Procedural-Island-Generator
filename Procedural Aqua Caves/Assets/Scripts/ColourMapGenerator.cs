@@ -7,15 +7,6 @@ public class ColourMapGenerator : MonoBehaviour
     public float rayHeight = 150;
     public TerrainLayer terrainMat;
     public Texture2D defaultTerrainColour;
-    public TerrainType[] regions;
-
-    [System.Serializable]
-    public struct TerrainType
-    {
-        public string name;
-        [Range(0f, 1f)] public float biomeHeight;
-        public Color colour;
-    }
 
     [ContextMenu("Generate Colour Map")]
     public void GenerateColourMap()
@@ -25,7 +16,7 @@ public class ColourMapGenerator : MonoBehaviour
         var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
 
         Color[] colourMap = new Color[terrainGeneration.width * terrainGeneration.height];
-        Debug.Log("array max size: " + terrainGeneration.width * terrainGeneration.height);
+        //Debug.Log("array max size: " + terrainGeneration.width * terrainGeneration.height);
 
         for (int i = 0; i <= terrainGeneration.width; i++)
         {
@@ -44,9 +35,9 @@ public class ColourMapGenerator : MonoBehaviour
                     float normalizedHeight = Mathf.InverseLerp(0, rayHeight, currentHeight);
                     //Debug.Log(normalizedHeight);
 
-                    for (int x = 0; x < regions.Length; x++)
+                    for (int x = 0; x < terrainGeneration.colourPerHeight.Length; x++)
                     {
-                        if (1 - normalizedHeight <= regions[x].biomeHeight)
+                        if (1 - normalizedHeight <= terrainGeneration.colourPerHeight[x].colourDepth)// regions[x].biomeHeight)
                         {
                             //impedes the loop to outgrowing the array boudnries
                             if(j * terrainGeneration.width + i + 1 >= terrainGeneration.width * terrainGeneration.height)
@@ -55,7 +46,7 @@ public class ColourMapGenerator : MonoBehaviour
                             }
                             else
                             {
-                                colourMap[j * terrainGeneration.width + i] = regions[x].colour;
+                                colourMap[j * terrainGeneration.width + i] = terrainGeneration.colourPerHeight[x].biomeColour;
                             }
 
                             //Debug.Log(j * terrainGeneration.width + i);
