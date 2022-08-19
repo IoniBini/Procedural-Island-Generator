@@ -14,6 +14,8 @@ public class TerrainGeneration1 : MonoBehaviour
     [Range(1, 8)] public int terrainResolution = 1;
     public int gridNumber = 1;
 
+    public bool saveMapAsPng = false;
+
     //I dont want these to be changed, so I'll hide them from view
     [HideInInspector] public int width = 32; //x-axis of the terrain
     [HideInInspector] public int height = 32; //z-axis
@@ -22,6 +24,17 @@ public class TerrainGeneration1 : MonoBehaviour
 
     public TerrainType[] biomes;
     public ColourPerHeight[] colourPerHeight;
+
+    [Header("Tree Configs")]
+    public bool destroyTreesOnGenerate = false;
+    public Vector2 Start;
+    public int DebugSpawnCount;
+    public Vector2 Size = new Vector2(1000f, 1000f);
+    public float MaxHeight = 300f; //this is my terrain height
+    public LayerMask ValidLayers;
+    [Range(0f, 1f)] public float SizeVariance = 0.1f;
+
+    public TreePerHeight[] treePerHeight;
 
     private int maxDepth = 100; //y-axis
     private float scale = 20f;
@@ -35,18 +48,38 @@ public class TerrainGeneration1 : MonoBehaviour
 
     private int biomeType;
 
+    [ContextMenu("Maximise Tree Placement Area")]
+    public void MaximiseTreePlacementArea()
+    {
+        //resets the position and size of the tree generator
+        Start = new Vector2(transform.position.x, transform.position.z);
+        MaxHeight = 300f;
+
+        var tempWidth = 32;
+        var tempHeight = 32;
+
+        for (int i = 0; i < terrainResolution - 1; i++)
+        {
+            tempWidth *= 2;
+            tempHeight *= 2;
+        }
+
+        Size = new Vector2(tempWidth, tempHeight);
+    }
+
     [ContextMenu("Generate Everything")]
     private void GenerateEverything()
     {
         TerrainPrep();
         GenerateColourMapParent();
+        GenerateTreesParent();
     }
 
     [ContextMenu("Only Generate Terrain")]
     private void TerrainPrep()
     {
         //delete the previous stuff prior to commencing
-        ClearTerrain();
+        ClearEverything();
 
         //reset the x and y values because they might have been modified by the resolution
         width = 32;
@@ -62,8 +95,6 @@ public class TerrainGeneration1 : MonoBehaviour
             width *= 2;
             height *= 2;
         }
-
-        //StartCoroutine(GenerateColourMap());
 
         Terrain terrain = GetComponent<Terrain>();
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
@@ -204,8 +235,15 @@ public class TerrainGeneration1 : MonoBehaviour
         colourMapGenerator.GenerateColourMap();
     }
 
+    [ContextMenu("Only Generate Trees")]
+    private void GenerateTreesParent()
+    {
+        var treeGenerator = GetComponentInChildren<TreePlacer2>();
+        treeGenerator.Spawn(DebugSpawnCount);
+    }
+
     [ContextMenu("Clear Everything")]
-    private void ClearTerrain()
+    private void ClearEverything()
     {
         var tempDepth = maxDepth;
         maxDepth = 0;
@@ -217,6 +255,29 @@ public class TerrainGeneration1 : MonoBehaviour
 
         var colourMapGenerator = GetComponentInChildren<ColourMapGenerator>();
         colourMapGenerator.ClearTerrainMaterial();
+        var treeGenerator = GetComponentInChildren<TreePlacer2>();
+        treeGenerator.ClearObjects();
+    }
+
+    [ContextMenu("Only Clear Terrain")]
+    private void ClearTerrain()
+    {
+        var colourMapGenerator = GetComponentInChildren<ColourMapGenerator>();
+        colourMapGenerator.ClearTerrainMaterial();
+    }
+
+    [ContextMenu("Only Clear Colourmap")]
+    private void ClearColourmap()
+    {
+        var colourMapGenerator = GetComponentInChildren<ColourMapGenerator>();
+        colourMapGenerator.ClearTerrainMaterial();
+    }
+
+    [ContextMenu("Only Clear Trees")]
+    private void ClearTrees()
+    {
+        var treeGenerator = GetComponentInChildren<TreePlacer2>();
+        treeGenerator.ClearObjects();
     }
 
     [System.Serializable]
@@ -232,6 +293,12 @@ public class TerrainGeneration1 : MonoBehaviour
     {
         [Range(0f, 1f)] public float colourDepth;
         public Color biomeColour;
+    }
+
+    [System.Serializable]
+    public struct TreePerHeight
+    {
+        [Range(0f, 1f)] public float treeDepth;
         public GameObject[] biomeTrees;
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TreePlacer1 : MonoBehaviour
 {
-    private Color currentColor;
+    public Texture2D test;
 
     [Header("Positioning")]
     private Vector2 Start;
@@ -13,7 +13,6 @@ public class TreePlacer1 : MonoBehaviour
     public LayerMask ValidLayers;
 
     [Header("Appearance")]
-    public GameObject[] TreePrefabs;
     [Range(0f, 1f)] public float SizeVariance = 0.1f;
 
     [Header("Debug")]
@@ -40,42 +39,95 @@ public class TreePlacer1 : MonoBehaviour
             //If it hit an object on an invalid layer, we also stop here
             if (!MaskContainsLayer(ValidLayers, hit.collider.gameObject.layer)) continue;
 
-            var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
-            var texture = terrainGeneration.terrainMat.diffuseTexture;
+            if (hit.collider.GetComponent<Terrain>() == false)
+            {
+                Renderer renderer = hit.collider.GetComponent<MeshRenderer>();
+                Texture2D texture = renderer.material.mainTexture as Texture2D;
+                Vector2 pCoord = hit.textureCoord;
+                pCoord.x *= texture.width;
+                pCoord.y *= texture.height;
+                Vector2 tiling = renderer.material.mainTextureScale;
+                Color color = texture.GetPixel(Mathf.FloorToInt(pCoord.x * tiling.x), Mathf.FloorToInt(pCoord.y * tiling.y));
+                color.r = Mathf.Round(color.r * 1000f) * 0.001f;
+                color.g = Mathf.Round(color.g * 1000f) * 0.001f;
+                color.b = Mathf.Round(color.b * 1000f) * 0.001f;
+                color.a = Mathf.Round(color.a * 1000f) * 0.001f;
 
-            Vector2 pixelUV = hit.textureCoord;
-            pixelUV.x *= texture.width;
-            pixelUV.y *= texture.height;
-            Vector2 tiling = texture.texelSize;
-            currentColor = texture.GetPixel(Mathf.FloorToInt(pixelUV.x * tiling.x), Mathf.FloorToInt(pixelUV.y * tiling.y));
+                PlaceTreeAt(hit.point, color);
 
-            //But if it *does* hit something, a bunch of information about the ray hit is stored in the 'hit' variable
-            if (FindIndexFromColor(currentColor) >= 0) PlaceTreeAt(hit.point);
+                Debug.Log(color);
+            }
+            else
+            {
+                //https://www.youtube.com/watch?v=YX8E1AE3BYs
+
+                Terrain terrain = hit.collider.GetComponent<Terrain>();
+                TerrainLayer layer = terrain.terrainData.terrainLayers[0];
+                Vector3 terrainPosition = hit.point - terrain.transform.position;
+                Vector3 splatMapPosition = new Vector3(
+                    terrainPosition.x / terrain.terrainData.size.x,
+                    0,
+                    terrainPosition.x / terrain.terrainData.size.z
+                    );
+
+                int x = Mathf.FloorToInt(splatMapPosition.x * layer.diffuseTexture.width);
+                int y = Mathf.FloorToInt(splatMapPosition.x * layer.diffuseTexture.height);
+
+                Texture2D texture = layer.diffuseTexture;
+                /*Vector2 pCoord = hit.textureCoord;
+                pCoord.x *= texture.width;
+                pCoord.y *= texture.height;
+                Vector2 tiling = layer.diffuseTexture.texelSize;*/
+                Color color = texture.GetPixel(x, y);
+                color.r = Mathf.Round(color.r * 1000f) * 0.001f;
+                color.g = Mathf.Round(color.g * 1000f) * 0.001f;
+                color.b = Mathf.Round(color.b * 1000f) * 0.001f;
+                color.a = Mathf.Round(color.a * 1000f) * 0.001f;//never forget to max the alpha in the color picker
+                //Debug.Log("color PRE calculation: " + color);
+
+                //Debug.Log("current color index: " + FindIndexFromColor(color));
+
+                //But if it *does* hit something, a bunch of information about the ray hit is stored in the 'hit' variable
+                //if (FindIndexFromColor(color) >= 0) PlaceTreeAt(hit.point, FindIndexFromColor(color));
+                PlaceTreeAt(hit.point, color);
+            }
+
+
         }
     }
 
     //Given a position that we successfully touch the terrain at, 
-    public void PlaceTreeAt(Vector3 position)
+    public void PlaceTreeAt(Vector3 position, Color foundColor)
     {
         var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
 
-        //for (int i = 0; i >= terrainGeneration.colourPerHeight.Length; i++)
+        for (int i = 0; i < terrainGeneration.colourPerHeight.Length; i++)
         {
-            //if (colorNumber == i)
+            //Debug.Log("test");
+
+            Color arrayColor = terrainGeneration.colourPerHeight[i].biomeColour;
+            arrayColor.r = Mathf.Round(arrayColor.r * 1000f) * 0.001f;
+            arrayColor.g = Mathf.Round(arrayColor.g * 1000f) * 0.001f;
+            arrayColor.b = Mathf.Round(arrayColor.b * 1000f) * 0.001f;
+            arrayColor.a = Mathf.Round(arrayColor.a * 1000f) * 0.001f;
+
+            if (foundColor == arrayColor)
             {
+                Debug.Log(foundColor);
+
                 //if (terrainGeneration.colourPerHeight[i].biomeTrees[0] == null)
                 {
                     //break;
                 }
 
                 //Spawns a random prefab at the provided position - and gives it a random rotation and scale
-                var newObj = Instantiate(terrainGeneration.colourPerHeight[0].biomeTrees[0]);
+                /*var newObj = Instantiate(terrainGeneration.colourPerHeight[i].biomeTrees[Random.Range(0, terrainGeneration.colourPerHeight[i].biomeTrees.Length)]);
                 newObj.transform.parent = transform;
                 newObj.transform.position = position;
                 newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
-                newObj.transform.localScale = Vector3.one * Random.Range(1f - SizeVariance, 1f + SizeVariance);
+                newObj.transform.localScale = Vector3.one * Random.Range(1f - SizeVariance, 1f + SizeVariance);*/
 
-                //break;
+                break;
             }
         }              
 
@@ -111,15 +163,24 @@ public class TreePlacer1 : MonoBehaviour
             //Debug.Log("found color = " + color.ToString());
             //Debug.Log("stored color = " + terrainGeneration.colourPerHeight[i].biomeColour.ToString());
 
-            if (terrainGeneration.colourPerHeight[i].biomeColour == color)
+            Color roundedColor = terrainGeneration.colourPerHeight[i].biomeColour;
+            roundedColor.r = Mathf.Round(color.r * 1000f) * 0.001f;
+            roundedColor.g = Mathf.Round(color.g * 1000f) * 0.001f;
+            roundedColor.b = Mathf.Round(color.b * 1000f) * 0.001f;
+            roundedColor.a = Mathf.Round(color.a * 1000f) * 0.001f;
+
+            //Debug.Log("color from the array: " + roundedColor);
+            //Debug.Log("color that was found: " + color);
+
+            if (roundedColor == color)//THE ISSUE IS HERE, BECAUSE IT ONLY EVER ACCEPTS THE FIRST VALUE IN TEH ARRAY
             {
-                //Debug.Log("colour " + i + " found");
+                Debug.Log("colour " + i + " found");
                 return i;
             }
             else
             {
-                //Debug.Log("invalid colour");
-                //continue;
+                Debug.Log("invalid colour");
+                continue;
             }
         }
 

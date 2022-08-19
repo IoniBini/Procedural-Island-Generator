@@ -69,9 +69,13 @@ public class ColourMapGenerator : MonoBehaviour
         texture.SetPixels(colourMap);
         texture.Apply();
 
-        /*byte[] bytes = texture.EncodeToPNG();
-        var dirPath = Application.dataPath + "/TerrainImages";
-        File.WriteAllBytes(dirPath + "TerrainCapture" + ".png", bytes);*/
+        if (terrainGeneration.saveMapAsPng == true)
+        {
+            //this takes a little bit of time to load, so if it doesn't show up rigth away, wait and reload the assets folder
+            byte[] bytes = texture.EncodeToPNG();
+            var dirPath = Application.dataPath + "/TerrainImages";
+            File.WriteAllBytes(dirPath + "TerrainCapture" + ".png", bytes);
+        }    
 
         terrainMat.diffuseTexture = texture;
         terrainMat.tileSize = new Vector2(terrainGeneration.width, terrainGeneration.height);
