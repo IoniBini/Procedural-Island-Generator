@@ -20,23 +20,33 @@ public class TreePlacer2 : MonoBehaviour
 
         //terrainGeneration.Start = new Vector2(transform.position.x, transform.position.z);
 
-        for (var i = 0; i < count; i++)
+        bool addExtras = false;
+
+        for (var j = 0; j < terrainGeneration.extrasFactor; j++)
         {
-            //We shine a virtual laster from a start point
-            var rayPos = new Vector3(terrainGeneration.Start.x + terrainGeneration.Size.x * Random.value, terrainGeneration.MaxHeight, terrainGeneration.Start.y + terrainGeneration.Size.y * Random.value);
+            //I believe the scene looks better with more extras than trees
+            if (j >= 1) addExtras = true;
 
-            //If that laser hits nothing, we stop here
-            if (!Physics.Raycast(rayPos, Vector3.down, out var hit, terrainGeneration.MaxHeight)) continue;
+            for (var i = 0; i < count; i++)
+            {
+                //We shine a virtual laster from a start point
+                var rayPos = new Vector3(terrainGeneration.Start.x + terrainGeneration.Size.x * Random.value, terrainGeneration.MaxHeight, terrainGeneration.Start.y + terrainGeneration.Size.y * Random.value);
 
-            //If it hit an object on an invalid layer, we also stop here
-            if (!MaskContainsLayer(terrainGeneration.ValidLayers, hit.collider.gameObject.layer)) continue;
+                //If that laser hits nothing, we stop here
+                if (!Physics.Raycast(rayPos, Vector3.down, out var hit, terrainGeneration.MaxHeight)) continue;
 
-            PlaceTreeAt(hit.point);
+                //If it hit an object on an invalid layer, we also stop here
+                if (!MaskContainsLayer(terrainGeneration.ValidLayers, hit.collider.gameObject.layer)) continue;
+
+                PlaceTreeAt(hit.point, addExtras);
+            }
         }
+
+        
     }
 
     //Given a position that we successfully touch the terrain at, 
-    public void PlaceTreeAt(Vector3 position)
+    public void PlaceTreeAt(Vector3 position, bool addExtras)
     {
         var terrainGeneration = GetComponentInParent<TerrainGeneration1>();
 
@@ -54,12 +64,25 @@ public class TreePlacer2 : MonoBehaviour
                         break;
                     }
 
-                    //Spawns a random prefab at the provided position - and gives it a random rotation and scale
-                    var newObj = Instantiate(terrainGeneration.treePerHeight[i].biomeTrees[Random.Range(0, terrainGeneration.treePerHeight[i].biomeTrees.Length)]);
-                    newObj.transform.parent = transform;
-                    newObj.transform.position = position;
-                    newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
-                    newObj.transform.localScale = Vector3.one * Random.Range(1f - terrainGeneration.SizeVariance, 1f + terrainGeneration.SizeVariance);
+                    if(addExtras == false)
+                    {
+                        //Spawns a random prefab at the provided position - and gives it a random rotation and scale
+                        var newObj = Instantiate(terrainGeneration.treePerHeight[i].biomeTrees[Random.Range(0, terrainGeneration.treePerHeight[i].biomeTrees.Length)]);
+                        newObj.transform.parent = transform;
+                        newObj.transform.position = position;
+                        newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
+                        newObj.transform.localScale = Vector3.one * Random.Range(1f - terrainGeneration.SizeVariance, 1f + terrainGeneration.SizeVariance);
+                    }
+                    else
+                    {
+                        //Spawns a random prefab at the provided position - and gives it a random rotation and scale
+                        var newObj = Instantiate(terrainGeneration.treePerHeight[i].biomeExtras[Random.Range(0, terrainGeneration.treePerHeight[i].biomeExtras.Length)]);
+                        newObj.transform.parent = transform;
+                        newObj.transform.position = position;
+                        newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
+                        newObj.transform.localScale = Vector3.one * Random.Range(1f - terrainGeneration.SizeVariance, 1f + terrainGeneration.SizeVariance);
+                    }
+                    
 
                     break;
                 }

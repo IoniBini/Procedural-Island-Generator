@@ -39,6 +39,7 @@ public class TerrainGeneration1 : MonoBehaviour
     public float MaxHeight = 300f; //this is my terrain height
     public LayerMask ValidLayers;
     [Range(0f, 1f)] public float SizeVariance = 0.1f;
+    [UnityEngine.Min(2)] public int extrasFactor;
 
     public TreePerHeight[] treePerHeight;
 
@@ -80,6 +81,7 @@ public class TerrainGeneration1 : MonoBehaviour
         MaximiseTreePlacementArea();
         GenerateColourMapParent();
         GenerateTreesParent();
+        UpdateSeaVariables();
     }
 
     [ContextMenu("Only Generate Terrain")]
@@ -284,7 +286,7 @@ public class TerrainGeneration1 : MonoBehaviour
     public struct TerrainType
     {
         public string biomeName;
-        [MinMax(1, 1000)]public int spawnChance;
+        [UnityEngine.Min(1)] public int spawnChance;
         [Range(0f, 1f)]public float biomeDepth;
         public float biomeScale;
     }
@@ -302,5 +304,6 @@ public class TerrainGeneration1 : MonoBehaviour
         [Range(0f, 1f)] public float treeDepth;
         [Range(0f, 1f)] public float spawnChance;
         public GameObject[] biomeTrees;
+        public GameObject[] biomeExtras;
     }
 }

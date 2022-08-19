@@ -67,7 +67,7 @@ public class FirstPersonController : MonoBehaviour
     public bool enableSprint = true;
     public bool unlimitedSprint = false;
     public KeyCode sprintKey = KeyCode.LeftShift;
-    public float sprintSpeed = 7f;
+    public float sprintSpeed = 50f;
     public float sprintDuration = 5f;
     public float sprintCooldown = .5f;
     public float sprintFOV = 80f;
