@@ -109,9 +109,16 @@ public class TerrainGeneration1 : MonoBehaviour
         {
             for (int x = 0; x < gridNumber; x++)
             {
-                biomeType = Random.Range(0, biomes.Length);
+                int totalChances = 0;
 
-                StartCoroutine(ApplyBiomeModifiers());
+                for(int i = 0; i < biomes.Length; i++)
+                {
+                    totalChances = totalChances + biomes[i].spawnChance;
+                }
+
+                biomeType = Random.Range(0, totalChances);
+
+                ApplyBiomeModifiers(totalChances);
 
                 offsetX = Random.Range(0f, 9999f);
                 offsetY = Random.Range(0f, 9999f);
@@ -124,56 +131,30 @@ public class TerrainGeneration1 : MonoBehaviour
         return terrainData;
     }
 
-    IEnumerator GenerateColourMap()
+    public void ApplyBiomeModifiers(int totalChance)
     {
-        /*Color[] colourMap = new Color[width * height];
-        float[,] heights = new float[(width), (height)];
+        //a known limitation of this method of handling randomness is that the first item in the list will ALWAYS take priority if
+        //two or more chance variables are the exact same value, but should work otherwise
+        int currentChance = 0;
 
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                
-                heights[x, y] = ((CalculateHeight(x, y) * depthModifier));// - map[x, y]);
-
-                float currentHeight = heights[x, y];
-                for (int i = 0; i < regions.Length; i++)
-                {
-                    if (currentHeight <= regions[i].biomeDepth)
-                    {
-                        colourMap[y * width + x] = regions[i].colour;
-                        break;
-                    }
-                }
-            }
-        }
-
-
-        Texture2D texture = new Texture2D(width, height);
-        texture.filterMode = FilterMode.Point;
-        texture.wrapMode = TextureWrapMode.Clamp;
-        texture.SetPixels(colourMap);
-        texture.Apply();
-        terrainMat.diffuseTexture = texture;
-        terrainMat.tileSize = new Vector2(width, height);*/
-
-        yield return new WaitForSeconds(.1f);
-    }
-
-    IEnumerator ApplyBiomeModifiers()
-    {
         //change scale, depth and chance to spawn for each biome type
         for (int x = 0; x < biomes.Length; x++)
         {
-            if (x == biomeType)
+            if(currentChance + biomes[x].spawnChance >= biomeType)
             {
+                //Debug.Log("current x: " + x);
+                //Debug.Log("current chance: " + currentChance);
+                //Debug.Log("chosen biome: " + biomeType);
+
                 depthModifier = biomes[x].biomeDepth;
                 scale = biomes[x].biomeScale;
                 break;
             }
+            else
+            {
+                continue;
+            }
         }
-
-        yield return new WaitForSeconds(.1f);
     }
 
     float[,] GenerateHeights()
@@ -239,7 +220,7 @@ public class TerrainGeneration1 : MonoBehaviour
     private void GenerateTreesParent()
     {
         var treeGenerator = GetComponentInChildren<TreePlacer2>();
-        treeGenerator.Spawn(DebugSpawnCount);
+        treeGenerator.SpawnDebug();
     }
 
     [ContextMenu("Clear Everything")]
@@ -284,6 +265,7 @@ public class TerrainGeneration1 : MonoBehaviour
     public struct TerrainType
     {
         public string biomeName;
+        [Min(1)]public int spawnChance;
         [Range(0f, 1f)]public float biomeDepth;
         public float biomeScale;
     }
@@ -299,6 +281,7 @@ public class TerrainGeneration1 : MonoBehaviour
     public struct TreePerHeight
     {
         [Range(0f, 1f)] public float treeDepth;
+        [Range(0f, 1f)] public float spawnChance;
         public GameObject[] biomeTrees;
     }
 }

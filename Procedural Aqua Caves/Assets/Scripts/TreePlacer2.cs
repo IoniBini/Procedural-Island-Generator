@@ -46,20 +46,23 @@ public class TreePlacer2 : MonoBehaviour
 
             if (normalizedHeight <= terrainGeneration.treePerHeight[i].treeDepth)
             {
-
-                if (terrainGeneration.treePerHeight[i].biomeTrees[0] == null)
+                if(terrainGeneration.treePerHeight[i].spawnChance >= Random.Range(0f, 1f))
                 {
+                    //breaks the loop if no obj was provided in the given height
+                    if (terrainGeneration.treePerHeight[i].biomeTrees[0] == null)
+                    {
+                        break;
+                    }
+
+                    //Spawns a random prefab at the provided position - and gives it a random rotation and scale
+                    var newObj = Instantiate(terrainGeneration.treePerHeight[i].biomeTrees[Random.Range(0, terrainGeneration.treePerHeight[i].biomeTrees.Length)]);
+                    newObj.transform.parent = transform;
+                    newObj.transform.position = position;
+                    newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
+                    newObj.transform.localScale = Vector3.one * Random.Range(1f - terrainGeneration.SizeVariance, 1f + terrainGeneration.SizeVariance);
+
                     break;
                 }
-
-                //Spawns a random prefab at the provided position - and gives it a random rotation and scale
-                var newObj = Instantiate(terrainGeneration.treePerHeight[i].biomeTrees[Random.Range(0, terrainGeneration.treePerHeight[i].biomeTrees.Length)]);
-                newObj.transform.parent = transform;
-                newObj.transform.position = position;
-                newObj.transform.eulerAngles = new Vector3(0f, Random.value * 360f, 0f);
-                newObj.transform.localScale = Vector3.one * Random.Range(1f - terrainGeneration.SizeVariance, 1f + terrainGeneration.SizeVariance);
-
-                break;
             }
         }              
 
