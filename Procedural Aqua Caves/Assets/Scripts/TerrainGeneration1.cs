@@ -5,56 +5,69 @@ using UnityEngine.Rendering.PostProcessing;
 
 public class TerrainGeneration1 : MonoBehaviour
 {
-    //this script is inspired by brackeys: https://www.youtube.com/watch?v=vFvwyu_ZKfU
-    //I didnt want to just copy sebastian lagues whole landmass generator video so instead, I will ATTEMPT to take a different approach, where I will mix elements from
-    //Brackeys, Sebastian and Lachlans codes so that I turn out with something slightly more original of my part (if "frankensteining" code can be called original)
-    //Im doing this not because it will be more efficient, it is exclusively because I want to show that I do know how to code as opposed to just copying
+    //this script is an amalgamation of a bunch of references around the internet. Each time I use somehting I didn't create, I put a link to it
+    //it is also worth noting that although this procedural generator works both in run and edit time, if you want to play the level in run time
+    //then you have to generate the level again DURING playtime, otherwise the texture and the sea colour will disappear
 
-    //to avoid causing errors due to the resolution of the terrain not being in multiples of the power of 2, I have created these variables to multiply with
-    //I have limited it to 8 because any more than that will escape the bounds of the noise map max size
+    //variables to multiply width and height. I have limited it to 8 because any more than that will escape the bounds of the noise map max size
     [Range(1, 8)] public int terrainResolution = 1;
+    //the number of times the terrain is divided into islands, both in rows and columns symmetrically 
     public int gridNumber = 1;
 
+    //if you wish to save the current map as a png, tick this to true
     public bool saveMapAsPng = false;
 
-    //I dont want these to be changed, so I'll hide them from view
+    //The minimum width and height of the terrain. I dont want these to be changed, so I'll hide them from view
     [HideInInspector] public int width = 32; //x-axis of the terrain
     [HideInInspector] public int height = 32; //z-axis
 
+    //the exposed material the terrain uses
     public TerrainLayer terrainMat;
 
+    //a struct containing all the terrain mesh generation
     public TerrainType[] biomes;
+    //a struct containing all the colour map generator variables
     public ColourPerHeight[] colourPerHeight;
 
     [Header("Sea Configs")]
+    //self explenatory variables
     public Color seaColor = Color.blue;
     public float seaHeight = 0f;
-    private ColorGrading _colorGrading;
+    public ColorGrading _colorGrading;
 
     [Header("Tree Configs")]
+    //more self explenatory variables
     public bool destroyTreesOnGenerate = false;
     public Vector2 Start;
     public int DebugSpawnCount;
     public Vector2 Size = new Vector2(1000f, 1000f);
-    public float MaxHeight = 300f; //this is my terrain height
+    public float MaxHeight = 300f;
     public LayerMask ValidLayers;
     [Range(0f, 1f)] public float SizeVariance = 0.1f;
+    //the extras factor causes more extras to be spawned in relation to trees, multiplied by this int bellow
     [UnityEngine.Min(2)] public int extrasFactor;
 
+    //a struct containing all the tree spawning variables
     public TreePerHeight[] treePerHeight;
 
+    //variables for generating the terrain mesh
     private int maxDepth = 100; //y-axis
     private float scale = 20f;
     private float depthModifier;
 
-    //[SerializeField]
-    //public static float[,] falloffArray;
-
     private float offsetX = 0f;// equivalent to the width
     private float offsetY = 0f;// equivalent to the height
 
+    //when randomly picking which type of terrain to create in the mesh, this is the variable to be set
     private int biomeType;
 
+    public void Awake()
+    {
+        //for play mode, do this so that it generates in the exe.
+        GenerateEverything();
+    }
+
+    //if you mess up the alignment of the tree placer, use this to reset it to maximum and default position
     [ContextMenu("Maximise Tree Placement Area")]
     public void MaximiseTreePlacementArea()
     {
@@ -74,6 +87,7 @@ public class TerrainGeneration1 : MonoBehaviour
         Size = new Vector2(tempWidth, tempHeight);
     }
 
+    //sets ALL of the generators off at the same time, AND CRUCIALLY, it has to be in this SPECIFIC order
     [ContextMenu("Generate Everything")]
     private void GenerateEverything()
     {
@@ -83,6 +97,8 @@ public class TerrainGeneration1 : MonoBehaviour
         GenerateTreesParent();
         UpdateSeaVariables();
     }
+
+    //bellow there are several context menus which execute each function individually in case you'd like to debug something
 
     [ContextMenu("Only Generate Terrain")]
     private void TerrainPrep()
@@ -111,13 +127,19 @@ public class TerrainGeneration1 : MonoBehaviour
 
     TerrainData GenerateTerrain(TerrainData terrainData)
     {
+        //set up the terrain scale correctly
         terrainData.heightmapResolution = width;
         terrainData.size = new Vector3(width, maxDepth, height);
 
+        //repeat the terrain generation process for each island in the grid, both in rows and in collumns
         for (int y = 0; y < gridNumber; y++)
         {
             for (int x = 0; x < gridNumber; x++)
             {
+                //this CONVOLUTED thing bellow randomly chooses what type of biome to is to be spawned from the list
+                //there are two known limitations to it:
+                //1 - the chance variables must grow from small to large, starting from the top to the bottom of the list
+                //2 - two items in the list CANNOT have the same chance number
                 int totalChances = 0;
 
                 for(int i = 0; i < biomes.Length; i++)
@@ -142,11 +164,9 @@ public class TerrainGeneration1 : MonoBehaviour
 
     public void ApplyBiomeModifiers(int totalChance)
     {
-        //a known limitation of this method of handling randomness is that the first item in the list will ALWAYS take priority if
-        //two or more chance variables are the exact same value, but should work otherwise
         int currentChance = 0;
 
-        //change scale, depth and chance to spawn for each biome type
+        //change scale and depth for each biome type
         for (int x = 0; x < biomes.Length; x++)
         {
             if(currentChance + biomes[x].spawnChance >= biomeType)
@@ -169,6 +189,8 @@ public class TerrainGeneration1 : MonoBehaviour
     float[,] GenerateHeights()
     {
         #region Falloff Map Generator
+        //the falloff map generator is STRAIGHT UP COPIED from this video from Sebastian Lague, I only lightly changed it so that it all
+        //fits within one script
         //https://www.youtube.com/watch?v=COmtTyLCd6I
         var size = (width) / gridNumber;
         float[,] map = new float[size, size];
@@ -194,8 +216,10 @@ public class TerrainGeneration1 : MonoBehaviour
         }
         #endregion
 
-        //the heights array represents how much area is being calcuated
+        //the heights array represents how much area is being calcuated within the total area of the terrain
         float[,] heights = new float[(width) / gridNumber, (height) / gridNumber];
+
+        //this process is repeated for each island in the grid, moving up in the x and z axis as it goes, so that islands don't generate on top of each other
         for (int x = 0; x < (width) / gridNumber; x++)
         {
             for (int y = 0; y < (height) / gridNumber; y++)
@@ -210,6 +234,7 @@ public class TerrainGeneration1 : MonoBehaviour
 
     float CalculateHeight(int x, int y)
     {
+        //takes into account the randomly picked offset as well as the scale of the texture
         float xCoord = ((x + offsetX) / width * scale);
         float yCoord = ((y + offsetY) / height * scale);
 
@@ -231,6 +256,9 @@ public class TerrainGeneration1 : MonoBehaviour
         var treeGenerator = GetComponentInChildren<TreePlacer2>();
         treeGenerator.SpawnDebug();
     }
+
+    //just like I did with the generation stuff, I have also made multiple, separate, context menus for each of the clearing functions,
+    //again, for the sake of being able to debug if need be, as well as one that clears everything in one go
 
     [ContextMenu("Clear Everything")]
     private void ClearEverything()
@@ -285,25 +313,36 @@ public class TerrainGeneration1 : MonoBehaviour
     [System.Serializable]
     public struct TerrainType
     {
+        //purely visual, has no impact in the code
         public string biomeName;
+        //the higher, the more likely for this terrain to spawn
         [UnityEngine.Min(1)] public int spawnChance;
+        //how high up and down the terrain can go
         [Range(0f, 1f)]public float biomeDepth;
+        //how much area from the perlin noie is being used, the more, the more waves
         public float biomeScale;
     }
 
     [System.Serializable]
     public struct ColourPerHeight
     {
+        //the lower, the closer to the floor the colour will be, and vice versa
         [Range(0f, 1f)] public float colourDepth;
+        //the aforementioned colour to be placed in the set height
         public Color biomeColour;
     }
 
     [System.Serializable]
     public struct TreePerHeight
     {
+        //the lower, the closer to the floor the tree will be, and vice versa
         [Range(0f, 1f)] public float treeDepth;
+        //I made this variable because even though you can choose to spawn less trees in the debug count, if you want to individually
+        //choose what trees in the list spawn more or less often, you can use the variable bellow
         [Range(0f, 1f)] public float spawnChance;
+        //the trees that are to be spawned in the given location
         public GameObject[] biomeTrees;
+        //the extra stuff that is to be spawned in the given location
         public GameObject[] biomeExtras;
     }
 }
