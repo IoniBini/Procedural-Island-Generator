@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class TerrainGeneration1 : MonoBehaviour
 {
@@ -24,6 +25,11 @@ public class TerrainGeneration1 : MonoBehaviour
 
     public TerrainType[] biomes;
     public ColourPerHeight[] colourPerHeight;
+
+    [Header("Sea Configs")]
+    public Color seaColor = Color.blue;
+    public float seaHeight = 0f;
+    private ColorGrading _colorGrading;
 
     [Header("Tree Configs")]
     public bool destroyTreesOnGenerate = false;
@@ -71,6 +77,7 @@ public class TerrainGeneration1 : MonoBehaviour
     private void GenerateEverything()
     {
         TerrainPrep();
+        MaximiseTreePlacementArea();
         GenerateColourMapParent();
         GenerateTreesParent();
     }
@@ -261,11 +268,23 @@ public class TerrainGeneration1 : MonoBehaviour
         treeGenerator.ClearObjects();
     }
 
+    [ContextMenu("Update Sea Variables")]
+    public void UpdateSeaVariables()
+    {
+        var seaObj = transform.Find("Sea").gameObject;
+        seaObj.transform.position = new Vector3(seaObj.transform.position.x, seaHeight, seaObj.transform.position.z);
+        seaObj.GetComponent<PostProcessVolume>().profile.TryGetSettings(out _colorGrading);
+        _colorGrading.colorFilter.value = seaColor;
+
+        if (Application.isPlaying) seaObj.GetComponent<Renderer>().material.color = seaColor;
+        else if (Application.isEditor) seaObj.GetComponent<Renderer>().sharedMaterial.color = seaColor;
+    }
+
     [System.Serializable]
     public struct TerrainType
     {
         public string biomeName;
-        [Min(1)]public int spawnChance;
+        [MinMax(1, 1000)]public int spawnChance;
         [Range(0f, 1f)]public float biomeDepth;
         public float biomeScale;
     }
